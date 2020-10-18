@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Bloom | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Bloom | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Bloom | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,7 +97,10 @@
 <p><a href="blur.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="ssao.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="bloom">Bloom</h2>
-<p><img src="https://i.imgur.com/UxKRz2r.gif" alt="Bloom" /></p>
+<p align="center">
+<img src="https://i.imgur.com/UxKRz2r.gif" alt="Bloom" title="Bloom">
+</p>
+
 <p>Adding bloom to a scene can really sell the illusion of the lighting model. Light emitting objects are more believable and specular highlights get an extra dose of shimmer.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a>  <span class="co">//...</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -111,18 +115,19 @@
 <span id="cb2-2"><a href="#cb2-2"></a></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  vec2 texSize = textureSize(colorTexture, <span class="dv">0</span>).xy;</span>
 <span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a>  <span class="dt">float</span> value = <span class="dv">0</span>;</span>
-<span id="cb2-6"><a href="#cb2-6"></a></span>
-<span id="cb2-7"><a href="#cb2-7"></a>  vec4 result = vec4(<span class="dv">0</span>);</span>
-<span id="cb2-8"><a href="#cb2-8"></a>  vec4 color  = vec4(<span class="dv">0</span>);</span>
-<span id="cb2-9"><a href="#cb2-9"></a></span>
-<span id="cb2-10"><a href="#cb2-10"></a>  <span class="cf">for</span> (<span class="dt">int</span> i = -size; i &lt;= size; ++i) {</span>
-<span id="cb2-11"><a href="#cb2-11"></a>    <span class="cf">for</span> (<span class="dt">int</span> j = -size; j &lt;= size; ++j) {</span>
-<span id="cb2-12"><a href="#cb2-12"></a>      <span class="co">// ...</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a>    }</span>
-<span id="cb2-14"><a href="#cb2-14"></a>  }</span>
-<span id="cb2-15"><a href="#cb2-15"></a></span>
-<span id="cb2-16"><a href="#cb2-16"></a>  <span class="co">// ...</span></span></code></pre></div>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="dt">float</span> value = <span class="fl">0.0</span>;</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="dt">float</span> count = <span class="fl">0.0</span>;</span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a>  vec4 result = vec4(<span class="dv">0</span>);</span>
+<span id="cb2-9"><a href="#cb2-9"></a>  vec4 color  = vec4(<span class="dv">0</span>);</span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a>  <span class="cf">for</span> (<span class="dt">int</span> i = -size; i &lt;= size; ++i) {</span>
+<span id="cb2-12"><a href="#cb2-12"></a>    <span class="cf">for</span> (<span class="dt">int</span> j = -size; j &lt;= size; ++j) {</span>
+<span id="cb2-13"><a href="#cb2-13"></a>      <span class="co">// ...</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a>    }</span>
+<span id="cb2-15"><a href="#cb2-15"></a>  }</span>
+<span id="cb2-16"><a href="#cb2-16"></a></span>
+<span id="cb2-17"><a href="#cb2-17"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>The technique starts by looping through a kernel/matrix/window centered over the current fragment. This is similar to the window used for <a href="outlining.html">outlining</a>. The size of the window is <code>size * 2 + 1</code> by <code>size * 2 + 1</code>. So for example, with a <code>size</code> setting of two, the window uses <code>(2 * 2 + 1)^2 = 25</code> samples per fragment.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a>      <span class="co">// ...</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
@@ -138,20 +143,23 @@
 <span id="cb3-12"><a href="#cb3-12"></a>      value = max(color.r, max(color.g, color.b));</span>
 <span id="cb3-13"><a href="#cb3-13"></a>      <span class="cf">if</span> (value &lt; threshold) { color = vec4(<span class="dv">0</span>); }</span>
 <span id="cb3-14"><a href="#cb3-14"></a></span>
-<span id="cb3-15"><a href="#cb3-15"></a>      result.rgb += color.rgb;</span>
-<span id="cb3-16"><a href="#cb3-16"></a></span>
-<span id="cb3-17"><a href="#cb3-17"></a>      <span class="co">// ...</span></span></code></pre></div>
+<span id="cb3-15"><a href="#cb3-15"></a>      result += color;</span>
+<span id="cb3-16"><a href="#cb3-16"></a>      count  += <span class="fl">1.0</span>;</span>
+<span id="cb3-17"><a href="#cb3-17"></a></span>
+<span id="cb3-18"><a href="#cb3-18"></a>      <span class="co">// ...</span></span></code></pre></div>
 <p>For each iteration, it retrieves the color from the input texture and turns the red, green, and blue values into a greyscale value. If this greyscale value is less than the threshold, it discards this color by making it solid black. After evaluating the sample's greyscale value, it adds its RGB values to <code>result</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a>  <span class="co">// ...</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a>  result.rgb /= pow(size * <span class="dv">2</span> + <span class="dv">1</span>, <span class="dv">2</span>);</span>
-<span id="cb4-4"><a href="#cb4-4"></a>  result.a = <span class="dv">1</span>;</span>
-<span id="cb4-5"><a href="#cb4-5"></a></span>
-<span id="cb4-6"><a href="#cb4-6"></a>  fragColor = mix(vec4(<span class="dv">0</span>), result, amount);</span>
-<span id="cb4-7"><a href="#cb4-7"></a></span>
-<span id="cb4-8"><a href="#cb4-8"></a>  <span class="co">// ...</span></span></code></pre></div>
+<span id="cb4-3"><a href="#cb4-3"></a>  result /= count;</span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a>  fragColor = mix(vec4(<span class="dv">0</span>), result, amount);</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>After it's done summing up the samples, it divides the sum of the color samples by the number of samples taken. The result is the average color of itself and its neighbors. By doing this for every fragment, you end up with a blurred image. This form of blurring is known as a <a href="blur.html#box-blur">box blur</a>.</p>
-<p><img src="https://i.imgur.com/m4yedrM.gif" alt="Bloom progresssion." /></p>
+<p align="center">
+<img src="https://i.imgur.com/m4yedrM.gif" alt="Bloom progresssion." title="Bloom progresssion.">
+</p>
+
 <p>Here you see the progression of the bloom algorithm.</p>
 <h3 id="source">Source</h3>
 <ul>

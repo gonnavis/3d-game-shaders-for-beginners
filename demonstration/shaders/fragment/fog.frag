@@ -15,6 +15,7 @@ uniform sampler2D positionTexture0;
 uniform sampler2D positionTexture1;
 uniform sampler2D smokeMaskTexture;
 
+uniform vec3 origin;
 uniform vec2 nearFar;
 uniform vec2 sunPosition;
 uniform vec2 enabled;
@@ -30,13 +31,15 @@ void main() {
   vec2 texSize  = textureSize(positionTexture0, 0).xy;
   vec2 texCoord = gl_FragCoord.xy / texSize;
 
-  vec4 position0 = texture(positionTexture0, texCoord);
-  vec4 smokeMask = texture(smokeMaskTexture, texCoord);
+  vec4 smokeMask    = texture(smokeMaskTexture, texCoord);
+  vec4 position0    = texture(positionTexture0, texCoord);
+       position0.y -= origin.y;
 
   float near = nearFar.x;
   float far  = nearFar.y;
 
-  vec4 position1 = texture(positionTexture1, texCoord);
+  vec4 position1    = texture(positionTexture1, texCoord);
+       position1.y -= origin.y;
   if (position1.a <= 0) { position1.y = far; }
 
   vec4 position = position1;
@@ -70,15 +73,13 @@ void main() {
     mix
       ( backgroundColor0
       , backgroundColor1
-      , clamp(1 - (random * 0.1 + texCoord.y), 0, 1)
+      , 1.0 - clamp(random * 0.1 + texCoord.y, 0.0, 1.0)
       );
 
   float sunPosition = max(0.2, -1 * sin(sunPosition.x * pi.y));
 
   color.rgb *= sunPosition;
   color.b    = mix(color.b + 0.05, color.b, sunPosition);
-
-  position.y = random * 0.5 + position.y;
 
   float intensity =
     clamp

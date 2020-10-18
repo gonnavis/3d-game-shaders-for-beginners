@@ -8,7 +8,9 @@
 
 ## Posterization
 
-![Posterization](https://i.imgur.com/hpP5G9z.gif)
+<p align="center">
+<img src="https://i.imgur.com/hpP5G9z.gif" alt="Posterization" title="Posterization">
+</p>
 
 Posterization or color quantization is the process of reducing the number of unique colors in an image.
 You can use this shader to give your game a comic book or retro look.

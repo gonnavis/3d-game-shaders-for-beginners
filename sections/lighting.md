@@ -2,13 +2,15 @@
 [:arrow_double_up:](../README.md)
 [:arrow_up_small:](#)
 [:arrow_down_small:](#copyright)
-[:arrow_forward:](cel-shading.md)
+[:arrow_forward:](blinn-phong.md)
 
 # 3D Game Shaders For Beginners
 
 ## Lighting
 
-![Lighting](https://i.imgur.com/zQrA8tr.gif)
+<p align="center">
+<img src="https://i.imgur.com/zQrA8tr.gif" alt="Lighting" title="Lighting">
+</p>
 
 Completing the lighting involves calculating and combining the ambient, diffuse, specular, and emission light aspects.
 The example code uses either Phong or Blinn-Phong lighting.
@@ -120,7 +122,9 @@ Now you can loop through the lights, calculating the diffuse and specular colors
 
 #### Light Related Vectors
 
-![Phong Lighting Model](https://i.imgur.com/0pzNh5d.gif)
+<p align="center">
+<img src="https://i.imgur.com/0pzNh5d.gif" alt="Phong Lighting Model" title="Phong Lighting Model">
+</p>
 
 Here you see the four major vectors you'll need to calculate the diffuse and specular colors contributed by each light.
 The light direction vector is the light blue arrow pointing to the light.
@@ -193,13 +197,9 @@ You'll use the reflection vector to calculate the intensity of the specular high
 ```c
     // ...
 
-    float diffuseIntensity  = max(dot(normal, unitLightDirection), 0.0);
+    float diffuseIntensity  = dot(normal, unitLightDirection);
 
-    if (diffuseIntensity > 0) {
-
-      // ...
-
-    }
+    if (diffuseIntensity < 0.0) { continue; }
 
     // ...
 ```
@@ -209,38 +209,40 @@ The dot product can range from negative one to one.
 If both vectors point in the same direction, the intensity is one.
 Any other case will be less than one.
 
-![The light direction versus the normal direction.](https://i.imgur.com/Nb78z96.gif)
+<p align="center">
+<img src="https://i.imgur.com/Nb78z96.gif" alt="The light direction versus the normal direction." title="The light direction versus the normal direction.">
+</p>
 
 As the light vector approaches the same direction as the normal, the diffuse intensity approaches one.
 
 ```c
     // ...
 
-    if (diffuseIntensity > 0) {
+    if (diffuseIntensity < 0.0) { continue; }
 
-      // ...
+    // ...
 ```
 
 If the diffuse intensity is zero or less, move on to the next light.
 
 ```c
-      // ...
+    // ...
 
-      vec4 diffuseTemp =
-        vec4
-          ( clamp
-              (   diffuseTex.rgb
-                * p3d_LightSource[i].diffuse.rgb
-                * diffuseIntensity
-              , 0
-              , 1
-              )
-          , diffuseTex.a
-          );
+    vec4 diffuseTemp =
+      vec4
+        ( clamp
+            (   diffuseTex.rgb
+              * p3d_LightSource[i].diffuse.rgb
+              * diffuseIntensity
+            , 0
+            , 1
+            )
+        , diffuseTex.a
+        );
 
-      diffuseTemp = clamp(diffuseTemp, vec4(0), diffuseTex);
+    diffuseTemp = clamp(diffuseTemp, vec4(0), diffuseTex);
 
-      // ...
+    // ...
 ```
 
 You can now calculate the diffuse color contributed by this light.
@@ -255,33 +257,37 @@ When creating your diffuse textures, make sure to create them as if they were fu
 
 After diffuse, comes specular.
 
-![Specular Intensity](https://i.imgur.com/u5L3kCi.gif)
+<p align="center">
+<img src="https://i.imgur.com/FnOhXxv.gif" alt="Specular Intensity" title="Specular Intensity">
+</p>
 
 ```c
-      // ...
+    // ...
 
-      float specularIntensity = max(dot(reflectedDirection, eyeDirection), 0);
+    float specularIntensity = max(dot(reflectedDirection, eyeDirection), 0);
 
-      vec4 specularTemp =
-        clamp
-          (   vec4(p3d_Material.specular, 1)
-            * p3d_LightSource[i].specular
-            * pow
-                ( specularIntensity
-                , p3d_Material.shininess
-                )
-          , 0
-          , 1
-          );
+    vec4 specularTemp =
+      clamp
+        (   vec4(p3d_Material.specular, 1)
+          * p3d_LightSource[i].specular
+          * pow
+              ( specularIntensity
+              , p3d_Material.shininess
+              )
+        , 0
+        , 1
+        );
 
-      // ...
+    // ...
 ```
 
 The specular intensity is the dot product between the eye vector and the reflection vector.
 As with the diffuse intensity, if the two vectors point in the same direction, the specular intensity is one.
 Any other intensity will diminish the amount of specular color contributed by this light.
 
-![Shininess](https://i.imgur.com/4r6wqLP.gif)
+<p align="center">
+<img src="https://i.imgur.com/4r6wqLP.gif" alt="Shininess" title="Shininess">
+</p>
 
 The material shininess determines how spread out the specular highlight is.
 This is typically set in a modeling program like Blender.
@@ -290,19 +296,17 @@ In Blender it's known as the specular hardness.
 #### Spotlights
 
 ```c
-      // ...
+    // ...
 
-      float unitLightDirectionDelta =
-        dot
-          ( normalize(p3d_LightSource[i].spotDirection)
-          , -unitLightDirection
-          );
+    float unitLightDirectionDelta =
+      dot
+        ( normalize(p3d_LightSource[i].spotDirection)
+        , -unitLightDirection
+        );
 
-      if (unitLightDirectionDelta >= p3d_LightSource[i].spotCosCutoff) {
-        // ...
-      }
+    if (unitLightDirectionDelta < p3d_LightSource[i].spotCosCutoff) { continue; }
 
-      // ...
+    // ...
 }
 ```
 
@@ -311,15 +315,15 @@ Fortunately, Panda3D
 [sets up](https://github.com/panda3d/panda3d/blob/daa57733cb9b4ccdb23e28153585e8e20b5ccdb5/panda/src/display/graphicsStateGuardian.cxx#L1705)
 `spotDirection` and `spotCosCutoff` to also work for directional lights and points lights.
 Spotlights have both a position and direction.
-However, directional lights have only a direction and point lights have only a position.
+However, directional lights only have a direction and point lights only have a position.
 Still, this code works for all three lights avoiding the need for noisy if statements.
 
 ```c
-          // ...
+        // ...
 
-          , -unitLightDirection
+        , -unitLightDirection
 
-          // ...
+        // ...
 ```
 
 You must negate `unitLightDirection`.
@@ -338,11 +342,11 @@ Recall that the dot product ranges from negative one to one.
 So it doesn't matter what the `unitLightDirectionDelta` is because it will always be greater than or equal to negative one.
 
 ```c
-        // ...
+    // ...
 
-        diffuseTemp *= pow(unitLightDirectionDelta, p3d_LightSource[i].spotExponent);
+    diffuseTemp *= pow(unitLightDirectionDelta, p3d_LightSource[i].spotExponent);
 
-        // ...
+    // ...
 ```
 
 Like the `unitLightDirectionDelta` snippet, this snippet also works for all three light types.
@@ -353,18 +357,18 @@ Recall that anything to the power of zero is one so the diffuse color is one tim
 #### Shadows
 
 ```c
-        // ...
+    // ...
 
-        float shadow =
-          textureProj
-            ( p3d_LightSource[i].shadowMap
-            , vertexInShadowSpaces[i]
-            );
+    float shadow =
+      textureProj
+        ( p3d_LightSource[i].shadowMap
+        , vertexInShadowSpaces[i]
+        );
 
-        diffuseTemp.rgb  *= shadow;
-        specularTemp.rgb *= shadow;
+    diffuseTemp.rgb  *= shadow;
+    specularTemp.rgb *= shadow;
 
-        // ...
+    // ...
 ```
 
 Panda3D makes applying shadows relatively easy by providing the shadow map and shadow transformation matrix for every scene light.
@@ -392,26 +396,28 @@ This weighted average can give shadows a softer look.
 
 #### Attenuation
 
-![Attenuation](https://i.imgur.com/jyatr7l.png)
+<p align="center">
+<img src="https://i.imgur.com/jyatr7l.png" alt="Attenuation" title="Attenuation">
+</p>
 
 ```c
-        // ...
+    // ...
 
-        float lightDistance = length(lightDirection);
+    float lightDistance = length(lightDirection);
 
-        float attenuation =
-            1
-          / ( p3d_LightSource[i].constantAttenuation
-            + p3d_LightSource[i].linearAttenuation
-            * lightDistance
-            + p3d_LightSource[i].quadraticAttenuation
-            * (lightDistance * lightDistance)
-            );
+    float attenuation =
+        1
+      / ( p3d_LightSource[i].constantAttenuation
+        + p3d_LightSource[i].linearAttenuation
+        * lightDistance
+        + p3d_LightSource[i].quadraticAttenuation
+        * (lightDistance * lightDistance)
+        );
 
-        diffuseTemp.rgb  *= attenuation;
-        specularTemp.rgb *= attenuation;
+    diffuseTemp.rgb  *= attenuation;
+    specularTemp.rgb *= attenuation;
 
-        // ...
+    // ...
 ```
 
 The light's distance is just the magnitude or length of the light direction vector.
@@ -427,12 +433,12 @@ With these settings, the attenuation is one at the light's position and approach
 #### Final Light Color
 
 ```c
-        // ...
+    // ...
 
-        diffuse  += diffuseTemp;
-        specular += specularTemp;
+    diffuse  += diffuseTemp;
+    specular += specularTemp;
 
-        // ...
+    // ...
 ```
 
 To calculate the final light color, add the diffuse and specular together.
@@ -503,4 +509,4 @@ The final color is the sum of the ambient color, diffuse color, specular color, 
 [:arrow_double_up:](../README.md)
 [:arrow_up_small:](#)
 [:arrow_down_small:](#copyright)
-[:arrow_forward:](cel-shading.md)
+[:arrow_forward:](blinn-phong.md)

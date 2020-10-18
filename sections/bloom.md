@@ -8,7 +8,9 @@
 
 ## Bloom
 
-![Bloom](https://i.imgur.com/UxKRz2r.gif)
+<p align="center">
+<img src="https://i.imgur.com/UxKRz2r.gif" alt="Bloom" title="Bloom">
+</p>
 
 Adding bloom to a scene can really sell the illusion of the lighting model.
 Light emitting objects are more believable and specular highlights get an extra dose of shimmer.
@@ -35,7 +37,8 @@ And the last parameter, `amount`, controls how much bloom is outputted.
 
   vec2 texSize = textureSize(colorTexture, 0).xy;
 
-  float value = 0;
+  float value = 0.0;
+  float count = 0.0;
 
   vec4 result = vec4(0);
   vec4 color  = vec4(0);
@@ -69,7 +72,8 @@ So for example, with a `size` setting of two, the window uses `(2 * 2 + 1)^2 = 2
       value = max(color.r, max(color.g, color.b));
       if (value < threshold) { color = vec4(0); }
 
-      result.rgb += color.rgb;
+      result += color;
+      count  += 1.0;
 
       // ...
 ```
@@ -82,8 +86,7 @@ After evaluating the sample's greyscale value, it adds its RGB values to `result
 ```c
   // ...
 
-  result.rgb /= pow(size * 2 + 1, 2);
-  result.a = 1;
+  result /= count;
 
   fragColor = mix(vec4(0), result, amount);
 
@@ -95,7 +98,9 @@ The result is the average color of itself and its neighbors.
 By doing this for every fragment, you end up with a blurred image.
 This form of blurring is known as a [box blur](blur.md#box-blur).
 
-![Bloom progresssion.](https://i.imgur.com/m4yedrM.gif)
+<p align="center">
+<img src="https://i.imgur.com/m4yedrM.gif" alt="Bloom progresssion." title="Bloom progresssion.">
+</p>
 
 Here you see the progression of the bloom algorithm.
 

@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Outlining | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Outlining | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Outlining | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,7 +97,10 @@
 <p><a href="flow-mapping.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="depth-of-field.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="outlining">Outlining</h2>
-<p><img src="https://i.imgur.com/EKaZRkR.gif" alt="Outlined Scene" /></p>
+<p align="center">
+<img src="https://i.imgur.com/EKaZRkR.gif" alt="Outlined Scene" title="Outlined Scene">
+</p>
+
 <p>Outlining your scene's geometry can give your game a distinctive look, reminiscent of comic books and cartoons.</p>
 <h3 id="discontinuities">Discontinuities</h3>
 <p>The process of outlining is the process of finding and labeling discontinuities or differences. Every time you find what you consider a significant difference, you mark it with your line color. As you go about labeling or coloring in the differences, outlines or edges will start to form.</p>
@@ -163,7 +167,10 @@
 <span id="cb6-5"><a href="#cb6-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>Converting the position to a depth value isn't necessary but it allows you to vary the thickness of the outline based on how far away the fragment is from the camera. Far away fragments get a thinner line while nearer fragments get a thicker outline. This tends to look nicer than a constant thickness since it gives depth to the outline.</p>
 <h3 id="finding-the-discontinuities">Finding The Discontinuities</h3>
-<p><img src="https://i.imgur.com/xAMRGhn.gif" alt="Edge Finding" /></p>
+<p align="center">
+<img src="https://i.imgur.com/xAMRGhn.gif" alt="Edge Finding" title="Edge Finding">
+</p>
+
 <div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a>  <span class="co">// ...</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a></span>
 <span id="cb7-3"><a href="#cb7-3"></a>  <span class="dt">float</span> mx = <span class="fl">0.0</span>;</span>
@@ -194,7 +201,10 @@
 <span id="cb8-16"><a href="#cb8-16"></a></span>
 <span id="cb8-17"><a href="#cb8-17"></a>      <span class="co">// ...</span></span></code></pre></div>
 <p>With each iteration, find the biggest distance between this fragment's and the surrounding fragments' positions.</p>
-<p><img src="https://i.imgur.com/idDZr62.png" alt="smoothstep" /></p>
+<p align="center">
+<img src="https://i.imgur.com/idDZr62.png" alt="smoothstep" title="smoothstep">
+</p>
+
 <div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a>  <span class="co">// ...</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a></span>
 <span id="cb9-3"><a href="#cb9-3"></a>  <span class="dt">float</span> diff = smoothstep(minDistance, maxDistance, mx);</span>
@@ -209,7 +219,10 @@
 <span id="cb10-5"><a href="#cb10-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>The line color is the current fragment color either darkened or lightened.</p>
 <h3 id="fragment-color">Fragment Color</h3>
-<p><img src="https://i.imgur.com/yWNdPZe.gif" alt="Outlines" /></p>
+<p align="center">
+<img src="https://i.imgur.com/yWNdPZe.gif" alt="Outlines" title="Outlines">
+</p>
+
 <div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a>  <span class="co">// ...</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a></span>
 <span id="cb11-3"><a href="#cb11-3"></a>  fragColor.rgb = vec4(lineColor, diff);</span>
@@ -217,9 +230,15 @@
 <span id="cb11-5"><a href="#cb11-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>The fragment's RGB color is the <code>lineColor</code> and its alpha channel is <code>diff</code>.</p>
 <h3 id="sketchy">Sketchy</h3>
-<p><img src="https://i.imgur.com/FRBkSm1.gif" alt="Sketchy Outline" /></p>
+<p align="center">
+<img src="https://i.imgur.com/FRBkSm1.gif" alt="Sketchy Outline" title="Sketchy Outline">
+</p>
+
 <p>For a sketchy outline, you can distort the UV coordinates used to sample the position vectors.</p>
-<p><img src="https://i.imgur.com/qgZNtnN.png" alt="Outline Noise" /></p>
+<p align="center">
+<img src="https://i.imgur.com/qgZNtnN.png" alt="Outline Noise" title="Outline Noise">
+</p>
+
 <div class="sourceCode" id="cb12"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">// ...</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a></span>
 <span id="cb12-3"><a href="#cb12-3"></a>uniform sampler2D noiseTexture;</span>
@@ -251,7 +270,10 @@
 <span id="cb15-7"><a href="#cb15-7"></a></span>
 <span id="cb15-8"><a href="#cb15-8"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>When sampling the current position, subtract the noise vector from the current fragment's coordinates.</p>
-<p><img src="https://i.imgur.com/wk43ybP.png" alt="Squiggly Outline" /></p>
+<p align="center">
+<img src="https://i.imgur.com/wk43ybP.png" alt="Squiggly Outline" title="Squiggly Outline">
+</p>
+
 <p>You could instead add it to the current fragment's coordinates which will create more of a squiggly line that loosely follows the geometry.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a>  <span class="co">// ...</span></span>
 <span id="cb16-2"><a href="#cb16-2"></a></span>
@@ -276,7 +298,6 @@
 <li><a href="https://github.com/lettier/3d-game-shaders-for-beginners/blob/master/demonstration/shaders/vertex/basic.vert" target="_blank" rel="noopener noreferrer">basic.vert</a></li>
 <li><a href="https://github.com/lettier/3d-game-shaders-for-beginners/blob/master/demonstration/shaders/fragment/position.frag" target="_blank" rel="noopener noreferrer">position.frag</a></li>
 <li><a href="https://github.com/lettier/3d-game-shaders-for-beginners/blob/master/demonstration/shaders/fragment/outline.frag" target="_blank" rel="noopener noreferrer">outline.frag</a></li>
-<li><a href="https://github.com/lettier/3d-game-shaders-for-beginners/blob/master/demonstration/shaders/fragment/scene-combine.frag" target="_blank" rel="noopener noreferrer">scene-combine.frag</a></li>
 </ul>
 <h2 id="copyright">Copyright</h2>
 <p>(C) 2019 David Lettier <br> <a href="https://www.lettier.com">lettier.com</a></p>

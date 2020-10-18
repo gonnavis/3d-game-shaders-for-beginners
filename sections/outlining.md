@@ -8,7 +8,9 @@
 
 ## Outlining
 
-![Outlined Scene](https://i.imgur.com/EKaZRkR.gif)
+<p align="center">
+<img src="https://i.imgur.com/EKaZRkR.gif" alt="Outlined Scene" title="Outlined Scene">
+</p>
 
 Outlining your scene's geometry can give your game a distinctive look,
 reminiscent of comic books and cartoons.
@@ -141,7 +143,9 @@ This tends to look nicer than a constant thickness since it gives depth to the o
 
 ### Finding The Discontinuities
 
-![Edge Finding](https://i.imgur.com/xAMRGhn.gif)
+<p align="center">
+<img src="https://i.imgur.com/xAMRGhn.gif" alt="Edge Finding" title="Edge Finding">
+</p>
 
 
 ```c
@@ -186,7 +190,9 @@ With each iteration,
 find the biggest distance between this fragment's
 and the surrounding fragments' positions.
 
-![smoothstep](https://i.imgur.com/idDZr62.png)
+<p align="center">
+<img src="https://i.imgur.com/idDZr62.png" alt="smoothstep" title="smoothstep">
+</p>
 
 ```c
   // ...
@@ -220,7 +226,9 @@ The line color is the current fragment color either darkened or lightened.
 
 ### Fragment Color
 
-![Outlines](https://i.imgur.com/yWNdPZe.gif)
+<p align="center">
+<img src="https://i.imgur.com/yWNdPZe.gif" alt="Outlines" title="Outlines">
+</p>
 
 ```c
   // ...
@@ -234,11 +242,15 @@ The fragment's RGB color is the `lineColor` and its alpha channel is `diff`.
 
 ### Sketchy
 
-![Sketchy Outline](https://i.imgur.com/FRBkSm1.gif)
+<p align="center">
+<img src="https://i.imgur.com/FRBkSm1.gif" alt="Sketchy Outline" title="Sketchy Outline">
+</p>
 
 For a sketchy outline, you can distort the UV coordinates used to sample the position vectors.
 
-![Outline Noise](https://i.imgur.com/qgZNtnN.png)
+<p align="center">
+<img src="https://i.imgur.com/qgZNtnN.png" alt="Outline Noise" title="Outline Noise">
+</p>
 
 ```c
 // ...
@@ -296,7 +308,9 @@ Finally, scale the noise by the scale chosen earlier.
 When sampling the current position,
 subtract the noise vector from the current fragment's coordinates.
 
-![Squiggly Outline](https://i.imgur.com/wk43ybP.png)
+<p align="center">
+<img src="https://i.imgur.com/wk43ybP.png" alt="Squiggly Outline" title="Squiggly Outline">
+</p>
 
 You could instead add it to the current fragment's coordinates
 which will create more of a squiggly line that loosely follows the geometry.
@@ -330,7 +344,6 @@ The rest of the calculations are the same.
 - [basic.vert](../demonstration/shaders/vertex/basic.vert)
 - [position.frag](../demonstration/shaders/fragment/position.frag)
 - [outline.frag](../demonstration/shaders/fragment/outline.frag)
-- [scene-combine.frag](../demonstration/shaders/fragment/scene-combine.frag)
 
 ## Copyright
 

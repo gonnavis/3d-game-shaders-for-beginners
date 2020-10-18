@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Screen Space Reflection | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Screen Space Reflection | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Screen Space Reflection | 3D Game Shaders For Beginners</title>
     <style>
@@ -93,10 +94,13 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-<p><a href="ssao.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="screen-space-refraction.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
+<p><a href="motion-blur.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="screen-space-refraction.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="screen-space-reflection-ssr">Screen Space Reflection (SSR)</h2>
-<p><img src="https://i.imgur.com/AYG4tvg.gif" alt="Screen Space Reflections" /></p>
+<p align="center">
+<img src="https://i.imgur.com/AYG4tvg.gif" alt="Screen Space Reflections" title="Screen Space Reflections">
+</p>
+
 <p>Adding reflections can really ground your scene. Wet and shiny objects spring to life as nothing makes something look wet or shiny quite like reflections. With reflections, you can really sell the illusion of water and metallic objects.</p>
 <p>In the <a href="lighting.html">lighting</a> section, you simulated the reflected, mirror-like image of the light source. This was the process of rendering the specular reflection. Recall that the specular light was computed using the reflected light direction. Similarly, using screen space reflection or SSR, you can simulate the reflection of other objects in the scene instead of just the light source. Instead of the light ray coming from the source and bouncing off into the camera, the light ray comes from some object in the scene and bounces off into the camera.</p>
 <p>SSR works by reflecting the screen image onto itself using only itself. Compare this to cube mapping which uses six screens or textures. In cube mapping, you reflect a ray from some point in your scene to some point on the inside of a cube surrounding your scene. In SSR, you reflect a ray from some point on your screen to some other point on your screen. By reflecting your screen onto itself, you can create the illusion of reflection. This illusion holds for the most part but SSR does fail in some cases as you'll see.</p>
@@ -104,22 +108,34 @@
 <p>Screen space reflection uses a technique known as ray marching to determine the reflection for each fragment. Ray marching is the process of iteratively extending or contracting the length or magnitude of some vector in order to probe or sample some space for information. The ray in screen space reflection is the position vector reflected about the normal.</p>
 <p>Intuitively, a light ray hits some point in the scene, bounces off, travels in the opposite direction of the reflected position vector, bounces off the current fragment, travels in the opposite direction of the position vector, and hits the camera lens allowing you to see the color of some point in the scene reflected in the current fragment. SSR is the process of tracing the light ray's path in reverse. It tries to find the reflected point the light ray bounced off of and hit the current fragment. With each iteration, the algorithm samples the scene's positions or depths, along the reflection ray, asking each time if the ray intersected with the scene's geometry. If there is an intersection, that position in the scene is a potential candidate for being reflected by the current fragment.</p>
 <p>Ideally there would be some analytical method for determining the first intersection point exactly. This first intersection point is the only valid point to reflect in the current fragment. Instead, this method is more like a game of battleship. You can't see the intersections (if there are any) so you start at the base of the reflection ray and call out coordinates as you travel in the direction of the reflection. With each call, you get back an answer of whether or not you hit something. If you do hit something, you try points around that area hoping to find the exact point of intersection.</p>
-<p><img src="https://i.imgur.com/wnAC7NI.gif" alt="SSR Ray Marching" /></p>
+<p align="center">
+<img src="https://i.imgur.com/wnAC7NI.gif" alt="SSR Ray Marching" title="SSR Ray Marching">
+</p>
+
 <p>Here you see ray marching being used to calculate each fragment's reflected point. The vertex normal is the bright green arrow, the position vector is the bright blue arrow, and the bright red vector is the reflection ray marching through view space.</p>
 <h3 id="vertex-positions">Vertex Positions</h3>
 <p>Like SSAO, you'll need the vertex positions in view space. Referrer back to <a href="ssao.html#vertex-positions">SSAO</a> for details.</p>
 <h3 id="vertex-normals">Vertex Normals</h3>
 <p>To compute the reflections, you'll need the vertex normals in view space. Referrer back to <a href="ssao.html#vertex-normals">SSAO</a> for details.</p>
-<p><img src="https://i.imgur.com/1cE2vBY.gif" alt="SSR using normal maps." /></p>
+<p align="center">
+<img src="https://i.imgur.com/1cE2vBY.gif" alt="SSR using normal maps." title="SSR using normal maps.">
+</p>
+
 <p>Here you see SSR using the normal mapped normals instead of the vertex normals. Notice how the reflection follows the ripples in the water versus the more mirror like reflection shown earlier.</p>
 <p>To use the normal maps instead, you'll need to transform the normal mapped normals from tangent space to view space just like you did in the lighting calculations. You can see this being done in <a href="https://github.com/lettier/3d-game-shaders-for-beginners/blob/master/demonstration/shaders/fragment/normal.frag" target="_blank" rel="noopener noreferrer">normal.frag</a>.</p>
 <h3 id="position-transformations">Position Transformations</h3>
-<p><img src="https://i.imgur.com/Qnsvkc0.gif" alt="Position Transformations" /></p>
+<p align="center">
+<img src="https://i.imgur.com/Qnsvkc0.gif" alt="Position Transformations" title="Position Transformations">
+</p>
+
 <p>Just like <a href="ssao.html">SSAO</a>, SSR goes back and forth between the screen and view space. You'll need the camera lens' projection matrix to transform points in view space to clip space. From clip space, you'll have to transform the points again to UV space. Once in UV space, you can sample a vertex/fragment position from the scene which will be the closest position in the scene to your sample. This is the <em>screen space</em> part in <em>screen space reflection</em> since the "screen" is a texture UV mapped over a screen shaped rectangle.</p>
 <h3 id="reflected-uv-coordinates">Reflected UV Coordinates</h3>
 <p>There are a few ways you can implement SSR. The example code starts the reflection process by computing a reflected UV coordinate for each screen fragment. You could skip this part and go straight to computing the reflected color instead, using the final rendering of the scene.</p>
 <p>Recall that UV coordinates range from zero to one for both U and V. The screen is just a 2D texture UV mapped over a screen-sized rectangle. Knowing this, the example code doesn't actually need the final rendering of the scene to compute the reflections. It can instead calculate what UV coordinate each screen pixel will eventually use. These calculated UV coordinates can be saved to a framebuffer texture and used later when the scene has been rendered.</p>
-<p><img src="https://i.imgur.com/pkQcGkD.gif" alt="Reflected UVs" /></p>
+<p align="center">
+<img src="https://i.imgur.com/pkQcGkD.gif" alt="Reflected UVs" title="Reflected UVs">
+</p>
+
 <p>Here you see the reflected UV coordinates. Without even rendering the scene yet, you can get a good feel for what the reflections will look like.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">//...</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -143,9 +159,15 @@
 <p>The <code>resolution</code> parameter controls how many fragments are skipped while traveling or marching the reflection ray during the first pass. This first pass is to find a point along the ray's direction where the ray enters or goes behind some geometry in the scene. Think of this first pass as the rough pass. Note that the <code>resolution</code> ranges from zero to one. Zero will result in no reflections while one will travel fragment-by-fragment along the ray's direction. A <code>resolution</code> of one can slow down your FPS considerably especially with a large <code>maxDistance</code>.</p>
 <p>The <code>steps</code> parameter controls how many iterations occur during the second pass. This second pass is to find the exact point along the reflection ray's direction where the ray immediately hits or intersects with some geometry in the scene. Think of this second pass as the refinement pass.</p>
 <p>The <code>thickness</code> controls the cutoff between what counts as a possible reflection hit and what does not. Ideally, you'd like to have the ray immediately stop at some camera-captured position or depth in the scene. This would be the exact point where the light ray bounced off, hit your current fragment, and then bounced off into the camera. Unfortunately the calculations are not always that precise so <code>thickness</code> provides some wiggle room or tolerance. You'll want the thickness to be as small as possible—just a short distance beyond a sampled position or depth.</p>
-<p><img src="https://i.imgur.com/W163Mfw.png" alt="Larger Thickness" /></p>
+<p align="center">
+<img src="https://i.imgur.com/W163Mfw.png" alt="Larger Thickness" title="Larger Thickness">
+</p>
+
 <p>You'll find that as the thickness gets larger, the reflections tend to smear in places.</p>
-<p><img src="https://i.imgur.com/T6uH4Yu.png" alt="Smaller Thickness" /></p>
+<p align="center">
+<img src="https://i.imgur.com/T6uH4Yu.png" alt="Smaller Thickness" title="Smaller Thickness">
+</p>
+
 <p>Going in the other direction, as the thickness gets smaller, the reflections become noisy with tiny little holes and narrow gaps.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a>  <span class="co">// ...</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
@@ -186,7 +208,10 @@
 <span id="cb5-18"><a href="#cb5-18"></a></span>
 <span id="cb5-19"><a href="#cb5-19"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>Project or transform these start and end points from view space to screen space. These points are now fragment positions which correspond to pixel positions on the screen. Now that you know where the ray starts and ends on the screen, you can travel or march along its direction in screen space. Think of the ray as a line drawn on the screen. You'll travel along this line using it to sample the fragment positions stored in the position framebuffer texture.</p>
-<p><img src="https://i.imgur.com/MpBR225.png" alt="Screen space versus view space." /></p>
+<p align="center">
+<img src="https://i.imgur.com/MpBR225.png" alt="Screen space versus view space." title="Screen space versus view space.">
+</p>
+
 <p>Note that you could march the ray through view space but this may under or over sample scene positions found in the position framebuffer texture. Recall that the position framebuffer texture is the size and shape of the screen. Every screen fragment or pixel corresponds to some position captured by the camera. A reflection ray may travel a long distance in view space, but in screen space, it may only travel through a few pixels. You can only sample the screen's pixels for positions so it is inefficient to potentially sample the same pixels over and over again while marching in view space. By marching in screen space, you'll more efficiently sample the fragments or pixels the ray actually occupies or covers.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a>  <span class="co">// ...</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a></span>
@@ -202,7 +227,10 @@
 <span id="cb7-5"><a href="#cb7-5"></a></span>
 <span id="cb7-6"><a href="#cb7-6"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>Calculate the delta or difference between the X and Y coordinates of the end and start fragments. This will be how many pixels the ray line occupies in the X and Y dimension of the screen.</p>
-<p><img src="https://i.imgur.com/Um4dzgL.png" alt="The reflection ray in screen space." /></p>
+<p align="center">
+<img src="https://i.imgur.com/Um4dzgL.png" alt="The reflection ray in screen space." title="The reflection ray in screen space.">
+</p>
+
 <div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a>  <span class="co">// ...</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a></span>
 <span id="cb8-3"><a href="#cb8-3"></a>  <span class="dt">float</span> useX      = abs(deltaX) &gt;= abs(deltaY) ? <span class="dv">1</span> : <span class="dv">0</span>;</span>
@@ -264,7 +292,10 @@
 <span id="cb15-4"><a href="#cb15-4"></a></span>
 <span id="cb15-5"><a href="#cb15-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>You can now begin the first pass. The first pass runs while <code>i</code> is less than the <code>delta</code> value. When <code>i</code> reaches <code>delta</code>, the algorithm has traveled the entire length of the line. Remember that <code>delta</code> is the larger of the two X and Y deltas.</p>
-<p><img src="https://i.imgur.com/Qnsvkc0.gif" alt="Screen Space Transformations" /></p>
+<p align="center">
+<img src="https://i.imgur.com/Qnsvkc0.gif" alt="Screen Space Transformations" title="Screen Space Transformations">
+</p>
+
 <div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a>    <span class="co">// ...</span></span>
 <span id="cb16-2"><a href="#cb16-2"></a></span>
 <span id="cb16-3"><a href="#cb16-3"></a>    frag      += increment;</span>
@@ -370,7 +401,10 @@
 <span id="cb28-4"><a href="#cb28-4"></a></span>
 <span id="cb28-5"><a href="#cb28-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>If the reflected scene position's alpha or <code>w</code> component is zero, the <code>visibility</code> is zero. Note that if <code>w</code> is zero, there was no scene position at that point.</p>
-<p><img src="https://i.imgur.com/7e2cOdZ.gif" alt="Reflection ray pointing towards the camera position." /></p>
+<p align="center">
+<img src="https://i.imgur.com/7e2cOdZ.gif" alt="Reflection ray pointing towards the camera position." title="Reflection ray pointing towards the camera position.">
+</p>
+
 <div class="sourceCode" id="cb29"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb29-1"><a href="#cb29-1"></a>  <span class="co">// ...</span></span>
 <span id="cb29-2"><a href="#cb29-2"></a></span>
 <span id="cb29-3"><a href="#cb29-3"></a>    * ( <span class="dv">1</span></span>
@@ -409,7 +443,10 @@
 <span id="cb31-11"><a href="#cb31-11"></a></span>
 <span id="cb31-12"><a href="#cb31-12"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>Fade out the reflection based on how far way the reflected point is from the initial starting point. This will fade out the reflection instead of it ending abruptly as it reaches <code>maxDistance</code>.</p>
-<p><img src="https://i.imgur.com/i0btBna.gif" alt="Reflection ray exiting the frustum." /></p>
+<p align="center">
+<img src="https://i.imgur.com/i0btBna.gif" alt="Reflection ray exiting the frustum." title="Reflection ray exiting the frustum.">
+</p>
+
 <div class="sourceCode" id="cb32"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb32-1"><a href="#cb32-1"></a>  <span class="co">// ...</span></span>
 <span id="cb32-2"><a href="#cb32-2"></a></span>
 <span id="cb32-3"><a href="#cb32-3"></a>    * (uv.x &lt; <span class="dv">0</span> || uv.x &gt; <span class="dv">1</span> ? <span class="dv">0</span> : <span class="dv">1</span>)</span>
@@ -428,7 +465,10 @@
 <span id="cb34-5"><a href="#cb34-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>The final fragment color is the reflected UV coordinates and the visibility.</p>
 <h3 id="specular-map">Specular Map</h3>
-<p><img src="https://i.imgur.com/iuFYVWB.gif" alt="Specular Map" /></p>
+<p align="center">
+<img src="https://i.imgur.com/iuFYVWB.gif" alt="Specular Map" title="Specular Map">
+</p>
+
 <p>In addition to the reflected UV coordinates, you'll also need a specular map. The example code creates one using the fragment's material specular properties.</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb35-1"><a href="#cb35-1"></a><span class="co">// ...</span></span>
 <span id="cb35-2"><a href="#cb35-2"></a></span>
@@ -452,10 +492,16 @@
 <p>The specular fragment shader is quite simple. Using the fragment's material, the shader outputs the specular color and uses the alpha channel for the shininess. The shininess is mapped to a range of zero to one. In Blender, the maximum specular hardness or shininess is 511. When exporting from Blender to Panda3D, 511 is exported as 127.75. Feel free to adjust the shininess to range of zero to one however you see fit for your particular stack.</p>
 <p>The example code generates a specular map from the material specular properties but you could create one in GIMP, for example, and attach that as a texture to your 3D model. For instance, say your 3D treasure chest has shiny brackets on it but nothing else should reflect the environment. You can paint the brackets some shade of gray and the rest of the treasure chest black. This will mask off the brackets, allowing your shader to render the reflections on only the brackets and nothing else.</p>
 <h3 id="scene-colors">Scene Colors</h3>
-<p><img src="https://i.imgur.com/diBSxPI.png" alt="Scene Colors" /></p>
+<p align="center">
+<img src="https://i.imgur.com/diBSxPI.png" alt="Scene Colors" title="Scene Colors">
+</p>
+
 <p>You'll need to render the parts of the scene you wish to reflect and store this in a framebuffer texture. This is typically just the scene without any reflections.</p>
 <h3 id="reflected-scene-colors">Reflected Scene Colors</h3>
-<p><img src="https://i.imgur.com/UPvgfDU.gif" alt="Reflected Scene Colors" /></p>
+<p align="center">
+<img src="https://i.imgur.com/UPvgfDU.gif" alt="Reflected Scene Colors" title="Reflected Scene Colors">
+</p>
+
 <p>Here you see the reflected colors saved to a framebuffer texture.</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb36-1"><a href="#cb36-1"></a><span class="co">// ...</span></span>
 <span id="cb36-2"><a href="#cb36-2"></a></span>
@@ -487,7 +533,10 @@
 <span id="cb39-5"><a href="#cb39-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>The fragment color is a mix between no reflection and the reflected color based on the visibility. The visibility was computed during the reflected UV coordinates step.</p>
 <h3 id="blurred-reflected-scene-colors">Blurred Reflected Scene Colors</h3>
-<p><img src="https://i.imgur.com/gVvx1Ei.png" alt="Blurred Reflected Scene Colors" /></p>
+<p align="center">
+<img src="https://i.imgur.com/gVvx1Ei.png" alt="Blurred Reflected Scene Colors" title="Blurred Reflected Scene Colors">
+</p>
+
 <p>Now blur the reflected scene colors and store this in a framebuffer texture. The blurring is done using a box blur. Refer to the <a href="ssao.html#blurring">SSAO blurring</a> step for details.</p>
 <p>The blurred reflected colors are used for surfaces that have a less than mirror like finish. These surfaces have tiny little hills and valleys that tend to diffuse or blur the reflection. I'll cover this more during the roughness calculation.</p>
 <h3 id="reflections">Reflections</h3>
@@ -548,6 +597,6 @@
 </ul>
 <h2 id="copyright">Copyright</h2>
 <p>(C) 2019 David Lettier <br> <a href="https://www.lettier.com">lettier.com</a></p>
-<p><a href="ssao.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="screen-space-refraction.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
+<p><a href="motion-blur.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="screen-space-refraction.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
   </body>
 </html>

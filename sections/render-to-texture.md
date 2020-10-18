@@ -24,7 +24,9 @@ However, you'll want to output as much as you can each render pass to keep your 
 
 There are two framebuffer texture setups found in the example code.
 
-![The first framebuffer texture setup.](https://i.imgur.com/t3iLKhx.gif)
+<p align="center">
+<img src="https://i.imgur.com/t3iLKhx.gif" alt="The first framebuffer texture setup." title="The first framebuffer texture setup.">
+</p>
 
 The first setup renders the mill scene into a framebuffer texture using a variety of vertex and fragment shaders.
 This setup will go through each of the mill scene's vertexes and corresponding fragments.
@@ -36,7 +38,9 @@ In this setup, the example code performs the following.
 - UV maps the various textures (diffuse, normal, shadow, etc.).
 - Calculates the ambient, diffuse, specular, and emission lighting.
 
-![The second framebuffer texture setup.](https://i.imgur.com/o8H6cTy.png)
+<p align="center">
+<img src="https://i.imgur.com/o8H6cTy.png" alt="The second framebuffer texture setup." title="The second framebuffer texture setup.">
+</p>
 
 The second setup is an orthographic camera pointed at a screen-shaped rectangle.
 This setup will go through just the four vertexes and their corresponding fragments.
@@ -48,7 +52,9 @@ In this second setup, the example code performs the following.
 
 I like to think of this second setup as using layers in GIMP, Krita, or Inkscape.
 
-![Tabbing Through Framebuffer Textures](https://i.imgur.com/L6Hwuxa.gif)
+<p align="center">
+<img src="https://i.imgur.com/L6Hwuxa.gif" alt="Tabbing Through Framebuffer Textures" title="Tabbing Through Framebuffer Textures">
+</p>
 
 In the example code, you can see the output of a particular framebuffer texture
 by using the <kbd>Tab</kbd> key or the <kbd>Shift</kbd>+<kbd>Tab</kbd> keys.

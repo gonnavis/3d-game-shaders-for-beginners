@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Pixelization | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Pixelization | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Pixelization | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,7 +97,10 @@
 <p><a href="posterization.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="sharpen.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="pixelization">Pixelization</h2>
-<p><img src="https://i.imgur.com/IbnyYZN.gif" alt="Pixelization" /></p>
+<p align="center">
+<img src="https://i.imgur.com/IbnyYZN.gif" alt="Pixelization" title="Pixelization">
+</p>
+
 <p>Pixelizing your 3D game can give it a interesting look and possibly save you time by not having to create all of the pixel art by hand. Combine it with the posterization for a true retro look.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a>  <span class="co">// ...</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -104,7 +108,10 @@
 <span id="cb1-4"><a href="#cb1-4"></a></span>
 <span id="cb1-5"><a href="#cb1-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>Feel free to adjust the pixel size. The bigger the pixel size, the blockier the image will be.</p>
-<p><img src="https://i.imgur.com/WF5MmM0.gif" alt="Pixelization Process" /></p>
+<p align="center">
+<img src="https://i.imgur.com/WF5MmM0.gif" alt="Pixelization Process" title="Pixelization Process">
+</p>
+
 <div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a>  <span class="co">// ...</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="dt">float</span> x = <span class="dt">int</span>(gl_FragCoord.x) % pixelSize;</span>

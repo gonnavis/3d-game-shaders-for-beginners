@@ -14,8 +14,8 @@ out vec4 fragColor;
 void main() {
   int   size         = int(parameters.x);
   float separation   =     parameters.y;
-  float minThreshold = 0.1;
-  float maxThreshold = 0.3;
+  float minThreshold = 0.2;
+  float maxThreshold = 0.5;
 
   vec2 texSize   = textureSize(colorTexture, 0).xy;
   vec2 fragCoord = gl_FragCoord.xy;
@@ -47,7 +47,7 @@ void main() {
             / texSize
           );
 
-      float mxt = dot(c.rgb, vec3(0.21, 0.72, 0.07));
+      float mxt = dot(c.rgb, vec3(0.3, 0.59, 0.11));
 
       if (mxt > mx) {
          mx = mxt;

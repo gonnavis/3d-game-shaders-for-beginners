@@ -12,6 +12,7 @@
 #include <algorithm>
 
 #include "pandaFramework.h" // Panda3D 1.10.1-1
+#include "renderBuffer.h"
 #include "load_prc_file.h"
 #include "pStatClient.h"
 #include "pandaSystem.h"
@@ -49,6 +50,7 @@
 
 struct FramebufferTexture
   { PT(GraphicsOutput) buffer
+  ; PT(DisplayRegion) bufferRegion
   ; PT(Camera) camera
   ; NodePath cameraNP
   ; NodePath shaderNP
@@ -90,8 +92,9 @@ float animateLights
   , AnimControlCollection shuttersAnimationCollection
   , float delta
   , float speed
-  , bool& switchedToNight
   , bool& closedShutters
+  , bool  middayDown
+  , bool  midnightDown
   );
 
 PT(Shader) loadShader
@@ -196,6 +199,12 @@ void setTextureToNearestAndClamp
   ( PT(Texture) texture
   );
 
+LColor mixColor
+  ( LColor a
+  , LColor b
+  , float amount
+  );
+
 // END FUNCTIONS
 
 // GLOBALS
@@ -213,39 +222,41 @@ const int UNSORTED_RENDER_SORT_ORDER   = 50;
 const int SSAO_SAMPLES = 8;
 const int SSAO_NOISE   = 4;
 
+const int SHADOW_SIZE = 2048;
+
 LVecBase4f sunlightColor0 =
   LVecBase4f
-    ( 0.958
-    , 0.147
-    , 0.190
+    ( 0.612
+    , 0.365
+    , 0.306
     , 1
     );
 LVecBase4f sunlightColor1 =
   LVecBase4f
-    ( 0.909
-    , 0.707
-    , 0.548
+    ( 0.765
+    , 0.573
+    , 0.400
     , 1
     );
 LVecBase4f moonlightColor0 =
   LVecBase4f
-    ( 0.153
-    , 0.186
-    , 0.262
+    ( 0.247
+    , 0.384
+    , 0.404
     , 1
     );
 LVecBase4f moonlightColor1 =
   LVecBase4f
-    ( 0.252
-    , 0.340
-    , 0.431
+    ( 0.392
+    , 0.537
+    , 0.571
     , 1
     );
 LVecBase4f windowLightColor =
   LVecBase4f
-    ( 1.000
+    ( 0.765
     , 0.573
-    , 0.396
+    , 0.400
     , 1
     );
 
@@ -274,37 +285,39 @@ int main
   ) {
   LColor backgroundColor [] =
     { LColor
-        ( 0.388
-        , 0.423
-        , 0.447
+        ( 0.392
+        , 0.537
+        , 0.561
         , 1
         )
     , LColor
-        ( 0.819
-        , 0.568
-        , 0.427
+        ( 0.953
+        , 0.733
+        , 0.525
         , 1
         )
     };
 
-  double cameraRotatePhiInitial    =   66;
-  double cameraRotateThetaInitial  =  236;
-  double cameraRotateRadiusInitial = 1586;
-  LVecBase3 cameraLookAtInitial    = LVecBase3(0, 0.5, 3);
-  int cameraNear                   =  450;
-  int cameraFar                    = 2000;
-  double cameraRotateRadius        = cameraRotateRadiusInitial;
-  double cameraRotatePhi           = cameraRotatePhiInitial;
-  double cameraRotateTheta         = cameraRotateThetaInitial;
-  LVecBase3 cameraLookAt           = cameraLookAtInitial;
+  double     cameraRotatePhiInitial    =   67.5095;
+  double     cameraRotateThetaInitial  =  231.721;
+  double     cameraRotateRadiusInitial = 1100.83;
+  LVecBase3  cameraLookAtInitial       = LVecBase3(1.00839, 1.20764, 5.85055);
+  float      cameraFov                 =    1.0;
+  int        cameraNear                =  150;
+  int        cameraFar                 = 2000;
+  LVecBase2f cameraNearFar             = LVecBase2f(cameraNear, cameraFar);
+  double     cameraRotateRadius        = cameraRotateRadiusInitial;
+  double     cameraRotatePhi           = cameraRotatePhiInitial;
+  double     cameraRotateTheta         = cameraRotateThetaInitial;
+  LVecBase3  cameraLookAt              = cameraLookAtInitial;
 
-  float fogNearInitial = cameraRotateRadiusInitial +  1.0;
-  float fogFarInitial  = fogNearInitial            + 12.0;
+  float fogNearInitial = 2.0;
+  float fogFarInitial  = 9.0;
   float fogNear        = fogNearInitial;
   float fogFar         = fogFarInitial;
   float fogAdjust      = 0.1;
 
-  LVecBase2f foamDepthInitial = LVecBase2f(4.0, 4.0);
+  LVecBase2f foamDepthInitial = LVecBase2f(1.5, 1.5);
   float      foamDepthAdjust  = 0.1;
   LVecBase2f foamDepth        = foamDepthInitial;
 
@@ -317,8 +330,8 @@ int main
   float      riorAdjust  = 0.005;
   LVecBase2f rior        = riorInitial;
 
-  LVecBase2f mouseFocusPointInitial = LVecBase2f(0.5, 0.5);
-  LVecBase2f mouseFocusPoint        = LVecBase2f(0.5, 0.5);
+  LVecBase2f mouseFocusPointInitial = LVecBase2f(0.509167, 0.598);
+  LVecBase2f mouseFocusPoint        = mouseFocusPointInitial;
 
   float sunlightP       = 260;
   bool  animateSunlight = true;
@@ -327,16 +340,18 @@ int main
   bool  soundStarted  = false;
   float startSoundAt  = 0.5;
 
-  bool switchedToNight = false;
-  bool closedShutters  = false;
+  bool closedShutters  = true;
 
-  float       statusAlpha    = 1.0;
-  LColor      statusColor    = LColor(0.9, 0.9, 1.0, statusAlpha);
-  float       statusFadeRate = 2.0;
-  std::string statusText     = "Ready";
+  float       statusAlpha       = 1.0;
+  LColor      statusColor       = LColor(0.9, 0.9, 1.0, statusAlpha);
+  LColor      statusShadowColor = LColor(0.1, 0.1, 0.3, statusAlpha);
+  float       statusFadeRate    = 2.0;
+  std::string statusText        = "Ready";
 
   LVecBase2f ssaoEnabled         = makeEnabledVec(1);
   LVecBase2f blinnPhongEnabled   = makeEnabledVec(1);
+  LVecBase2f fresnelEnabled      = makeEnabledVec(1);
+  LVecBase2f rimLightEnabled     = makeEnabledVec(1);
   LVecBase2f refractionEnabled   = makeEnabledVec(1);
   LVecBase2f reflectionEnabled   = makeEnabledVec(1);
   LVecBase2f fogEnabled          = makeEnabledVec(1);
@@ -350,6 +365,7 @@ int main
   LVecBase2f flowMapsEnabled     = makeEnabledVec(1);
   LVecBase2f lookupTableEnabled  = makeEnabledVec(1);
   LVecBase2f painterlyEnabled    = makeEnabledVec(0);
+  LVecBase2f motionBlurEnabled   = makeEnabledVec(0);
   LVecBase2f posterizeEnabled    = makeEnabledVec(0);
   LVecBase2f pixelizeEnabled     = makeEnabledVec(0);
 
@@ -366,15 +382,17 @@ int main
     , audioManager->get_sound("sounds/water.ogg", true)
     };
 
-  PT(Texture) blackTexture             = TexturePool::load_texture("images/black.png");
+  PT(Texture) blankTexture             = TexturePool::load_texture("images/blank.png");
   PT(Texture) foamPatternTexture       = TexturePool::load_texture("images/foam-pattern.png");
   PT(Texture) stillFlowTexture         = TexturePool::load_texture("images/still-flow.png");
   PT(Texture) upFlowTexture            = TexturePool::load_texture("images/up-flow.png");
+  PT(Texture) colorLookupTableTextureN = TexturePool::load_texture("images/lookup-table-neutral.png");
   PT(Texture) colorLookupTableTexture0 = TexturePool::load_texture("images/lookup-table-0.png");
   PT(Texture) colorLookupTableTexture1 = TexturePool::load_texture("images/lookup-table-1.png");
   PT(Texture) smokeTexture             = TexturePool::load_texture("images/smoke.png");
   PT(Texture) colorNoiseTexture        = TexturePool::load_texture("images/color-noise.png");
 
+  setTextureToNearestAndClamp(colorLookupTableTextureN);
   setTextureToNearestAndClamp(colorLookupTableTexture0);
   setTextureToNearestAndClamp(colorLookupTableTexture1);
 
@@ -382,10 +400,11 @@ int main
   framework.open_framework(argc, argv);
   framework.set_window_title("3D Game Shaders For Beginners By David Lettier");
 
-  PT(WindowFramework)         window = framework.open_window();
-  PT(GraphicsWindow)  graphicsWindow = window->get_graphics_window();
-  PT(GraphicsOutput)  graphicsOutput = window->get_graphics_output();
-  PT(GraphicsEngine)  graphicsEngine = graphicsOutput->get_gsg()->get_engine();
+  PT(WindowFramework)         window                = framework.open_window();
+  PT(GraphicsWindow)          graphicsWindow        = window->get_graphics_window();
+  PT(GraphicsOutput)          graphicsOutput        = window->get_graphics_output();
+  PT(GraphicsStateGuardian)   graphicsStateGuardian = graphicsOutput->get_gsg();
+  PT(GraphicsEngine)          graphicsEngine        = graphicsStateGuardian->get_engine();
 
   window->enable_keyboard();
 
@@ -404,6 +423,8 @@ int main
   status->set_font(font);
   status->set_text(statusText);
   status->set_text_color(statusColor);
+  status->set_shadow(0.0, 0.06);
+  status->set_shadow_color(statusShadowColor);
   NodePath statusNP = render2d.attach_new_node(status);
   statusNP.set_scale(0.05);
   statusNP.set_pos(-0.96, 0, -0.95);
@@ -412,7 +433,7 @@ int main
 
   PT(Camera) mainCamera = window->get_camera(0);
   PT(Lens) mainLens = mainCamera->get_lens();
-  mainLens->set_fov(1);
+  mainLens->set_fov(cameraFov);
   mainLens->set_near_far(cameraNear, cameraFar);
 
   NodePath cameraNP = window->get_camera_group();
@@ -442,32 +463,37 @@ int main
     window
       ->load_model
         ( framework.get_models()
-        , "eggs/mill-scene/shutters"
+        , "eggs/mill-scene/shutters.bam"
         );
   shuttersNP.reparent_to(sceneRootNP);
   NodePath weatherVaneNP =
     window
       ->load_model
         ( framework.get_models()
-        , "eggs/mill-scene/weather-vane"
+        , "eggs/mill-scene/weather-vane.bam"
         );
   weatherVaneNP.reparent_to(sceneRootNP);
+  NodePath bannerNP =
+    window
+      ->load_model
+        ( framework.get_models()
+        , "eggs/mill-scene/banner.bam"
+        );
+  bannerNP.reparent_to(sceneRootNP);
 
   NodePath wheelNP   = environmentNP.find("**/wheel-lp");
   NodePath waterNP   = environmentNP.find("**/water-lp");
-  NodePath gridFloor = environmentNP.find("**/grid-floor");
-
-  wheelNP.set_two_sided(true);
-  gridFloor.set_two_sided(true);
-
-  gridFloor.set_light_off();
 
   squashGeometry(environmentNP);
 
   NodePath smokeNP = setUpParticles(render, smokeTexture);
 
+  waterNP.set_transparency(TransparencyAttrib::M_dual);
+  waterNP.set_bin("fixed", 0);
+
   AnimControlCollection shuttersAnimationCollection;
   AnimControlCollection weatherVaneAnimationCollection;
+  AnimControlCollection bannerAnimationCollection;
   auto_bind
     ( shuttersNP.node()
     , shuttersAnimationCollection
@@ -482,6 +508,13 @@ int main
       | PartGroup::HMF_ok_part_extra
       | PartGroup::HMF_ok_anim_extra
     );
+  auto_bind
+    ( bannerNP.node()
+    , bannerAnimationCollection
+    ,   PartGroup::HMF_ok_wrong_root_name
+      | PartGroup::HMF_ok_part_extra
+      | PartGroup::HMF_ok_anim_extra
+    );
 
   generateLights(render, false);
 
@@ -490,15 +523,10 @@ int main
   PT(Shader) geometryBufferShader0       = loadShader("base",    "geometry-buffer-0");
   PT(Shader) geometryBufferShader1       = loadShader("base",    "geometry-buffer-1");
   PT(Shader) geometryBufferShader2       = loadShader("base",    "geometry-buffer-2");
-  PT(Shader) materialDiffuseShader       = loadShader("base",    "material-diffuse");
-  PT(Shader) materialSpecularShader      = loadShader("base",    "material-specular");
-  PT(Shader) positionShader              = loadShader("base",    "position");
-  PT(Shader) normalShader                = loadShader("base",    "normal");
-  PT(Shader) foamMaskShader              = loadShader("base",    "foam-mask");
   PT(Shader) foamShader                  = loadShader("basic",   "foam");
   PT(Shader) fogShader                   = loadShader("basic",   "fog");
   PT(Shader) boxBlurShader               = loadShader("basic",   "box-blur");
-  PT(Shader) medianFilterShader          = loadShader("basic",   "median-filter");
+  PT(Shader) motionBlurShader            = loadShader("basic",   "motion-blur");
   PT(Shader) kuwaharaFilterShader        = loadShader("basic",   "kuwahara-filter");
   PT(Shader) dilationShader              = loadShader("basic",   "dilation");
   PT(Shader) sharpenShader               = loadShader("basic",   "sharpen");
@@ -524,12 +552,16 @@ int main
   mainCamera->set_initial_state(mainCameraNP.get_state());
 
   NodePath isWaterNP = NodePath("isWater");
+  isWaterNP.set_shader_input("isWater",            LVecBase2f(1.0, 1.0));
   isWaterNP.set_shader_input("flowTexture",        upFlowTexture);
   isWaterNP.set_shader_input("foamPatternTexture", foamPatternTexture);
 
   NodePath isSmokeNP = NodePath("isSmoke");
   isSmokeNP.set_shader_input("isSmoke",    LVecBase2f(1.0, 1.0));
   isSmokeNP.set_shader_input("isParticle", LVecBase2f(1.0, 1.0));
+
+  LMatrix4 currentViewWorldMat      = cameraNP.get_transform(render)->get_mat();
+  LMatrix4 previousViewWorldMat     = previousViewWorldMat;
 
   FramebufferTextureArguments framebufferTextureArguments;
   framebufferTextureArguments.window         = window;
@@ -570,7 +602,7 @@ int main
   waterNP.hide(BitMask32::bit(1));
   smokeNP.hide(BitMask32::bit(1));
 
-  framebufferTextureArguments.aux_rgba = 3;
+  framebufferTextureArguments.aux_rgba = 4;
   framebufferTextureArguments.name     = "geometry1";
 
   FramebufferTexture geometryFramebufferTexture1 =
@@ -601,10 +633,17 @@ int main
     );
   geometryBuffer1->set_clear_active(5, true);
   geometryBuffer1->set_clear_value( 5, framebufferTextureArguments.clearColor);
+  geometryBuffer1->add_render_texture
+    ( NULL
+    , GraphicsOutput::RTM_bind_or_copy
+    , GraphicsOutput::RTP_aux_rgba_3
+    );
+  geometryBuffer1->set_clear_active(6, true);
+  geometryBuffer1->set_clear_value( 6, framebufferTextureArguments.clearColor);
   geometryNP1.set_shader(geometryBufferShader1);
   geometryNP1.set_shader_input("normalMapsEnabled",  normalMapsEnabled);
   geometryNP1.set_shader_input("flowTexture",        stillFlowTexture);
-  geometryNP1.set_shader_input("foamPatternTexture", blackTexture);
+  geometryNP1.set_shader_input("foamPatternTexture", blankTexture);
   geometryNP1.set_shader_input("flowMapsEnabled",    flowMapsEnabled);
   geometryCamera1->set_initial_state(geometryNP1.get_state());
   geometryCamera1->set_tag_state_key("geometryBuffer1");
@@ -612,8 +651,9 @@ int main
   geometryCamera1->set_camera_mask(BitMask32::bit(2));
   PT(Texture) positionTexture1        = geometryBuffer1->get_texture(0);
   PT(Texture) normalTexture1          = geometryBuffer1->get_texture(1);
-  PT(Texture) materialSpecularTexture = geometryBuffer1->get_texture(2);
-  PT(Texture) foamMaskTexture         = geometryBuffer1->get_texture(3);
+  PT(Texture) reflectionMaskTexture   = geometryBuffer1->get_texture(2);
+  PT(Texture) refractionMaskTexture   = geometryBuffer1->get_texture(3);
+  PT(Texture) foamMaskTexture         = geometryBuffer1->get_texture(4);
   PT(Lens)    geometryCameraLens1     = geometryCamera1->get_lens();
   waterNP.set_tag("geometryBuffer1", "isWater");
   smokeNP.hide(BitMask32::bit(2));
@@ -635,14 +675,17 @@ int main
     );
   geometryBuffer2->set_clear_active(3, true);
   geometryBuffer2->set_clear_value( 3, framebufferTextureArguments.clearColor);
+  geometryBuffer2->set_sort(geometryBuffer1->get_sort() + 1);
   geometryNP2.set_shader(geometryBufferShader2);
-  geometryNP2.set_shader_input("isSmoke", LVecBase2f(0, 0));
+  geometryNP2.set_shader_input("isSmoke",         LVecBase2f(0, 0));
+  geometryNP2.set_shader_input("positionTexture", positionTexture1);
   geometryCamera2->set_initial_state(geometryNP2.get_state());
   geometryCamera2->set_tag_state_key("geometryBuffer2");
   geometryCamera2->set_tag_state("isSmoke", isSmokeNP.get_state());
   smokeNP.set_tag("geometryBuffer2", "isSmoke");
-  PT(Texture) positionTexture2 = geometryBuffer2->get_texture(0);
-  PT(Texture) smokeMaskTexture = geometryBuffer2->get_texture(1);
+  PT(Texture) positionTexture2         = geometryBuffer2->get_texture(0);
+  PT(Texture) smokeMaskTexture         = geometryBuffer2->get_texture(1);
+  PT(Lens)    geometryCameraLens2      = geometryCamera2->get_lens();
 
   framebufferTextureArguments.rgbaBits      = rgba8;
   framebufferTextureArguments.aux_rgba      = 0;
@@ -668,6 +711,7 @@ int main
   fogNP.set_shader_input("positionTexture1", positionTexture2);
   fogNP.set_shader_input("smokeMaskTexture", smokeMaskTexture);
   fogNP.set_shader_input("sunPosition",      LVecBase2f(sunlightP, 0));
+  fogNP.set_shader_input("origin",           cameraNP.get_relative_point(render, environmentNP.get_pos()));
   fogNP.set_shader_input("nearFar",          LVecBase2f(fogNear, fogFar));
   fogNP.set_shader_input("enabled",          fogEnabled);
   fogCamera->set_initial_state(fogNP.get_state());
@@ -704,7 +748,7 @@ int main
   ssaoBlurBuffer->set_sort(ssaoBuffer->get_sort() + 1);
   ssaoBlurNP.set_shader(kuwaharaFilterShader);
   ssaoBlurNP.set_shader_input("colorTexture", ssaoBuffer->get_texture());
-  ssaoBlurNP.set_shader_input("parameters",   LVecBase2f(2, 0));
+  ssaoBlurNP.set_shader_input("parameters",   LVecBase2f(1, 0));
   ssaoBlurFramebufferTexture.camera->set_initial_state(ssaoBlurNP.get_state());
   PT(Texture) ssaoBlurTexture = ssaoBlurBuffer->get_texture();
 
@@ -743,13 +787,14 @@ int main
   reflectionUvNP.set_shader(screenSpaceReflectionShader);
   reflectionUvNP.set_shader_input("positionTexture", positionTexture1);
   reflectionUvNP.set_shader_input("normalTexture",   normalTexture1);
-  reflectionUvNP.set_shader_input("maskTexture",     materialSpecularTexture);
+  reflectionUvNP.set_shader_input("maskTexture",     reflectionMaskTexture);
   reflectionUvNP.set_shader_input("lensProjection",  geometryCameraLens0->get_projection_mat());
   reflectionUvNP.set_shader_input("enabled",         reflectionEnabled);
   reflectionUvCamera->set_initial_state(reflectionUvNP.get_state());
   PT(Texture) reflectionUvTexture = reflectionUvBuffer->get_texture();
 
   framebufferTextureArguments.rgbaBits = rgba8;
+  framebufferTextureArguments.aux_rgba = 1;
   framebufferTextureArguments.useScene = true;
   framebufferTextureArguments.name     = "base";
 
@@ -757,10 +802,16 @@ int main
     generateFramebufferTexture
       ( framebufferTextureArguments
       );
-
   PT(GraphicsOutput) baseBuffer = baseFramebufferTexture.buffer;
   PT(Camera)         baseCamera = baseFramebufferTexture.camera;
   NodePath           baseNP     = baseFramebufferTexture.shaderNP;
+  baseBuffer->add_render_texture
+    ( NULL
+    , GraphicsOutput::RTM_bind_or_copy
+    , GraphicsOutput::RTP_aux_rgba_0
+    );
+  baseBuffer->set_clear_active(3, true);
+  baseBuffer->set_clear_value( 3, framebufferTextureArguments.clearColor);
   baseBuffer->set_sort
     ( std::max
         ( ssaoBlurBuffer->get_sort() + 1
@@ -774,72 +825,27 @@ int main
   baseNP.set_shader_input("flowTexture",       stillFlowTexture);
   baseNP.set_shader_input("normalMapsEnabled", normalMapsEnabled);
   baseNP.set_shader_input("blinnPhongEnabled", blinnPhongEnabled);
+  baseNP.set_shader_input("fresnelEnabled",    fresnelEnabled);
+  baseNP.set_shader_input("rimLightEnabled",   rimLightEnabled);
   baseNP.set_shader_input("celShadingEnabled", celShadingEnabled);
   baseNP.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
   baseNP.set_shader_input("specularOnly",      LVecBase2f(0, 0));
   baseNP.set_shader_input("isParticle",        LVecBase2f(0, 0));
+  baseNP.set_shader_input("isWater",           LVecBase2f(0, 0));
   baseNP.set_shader_input("sunPosition",       LVecBase2f(sunlightP, 0));
   baseCamera->set_initial_state(baseNP.get_state());
   baseCamera->set_tag_state_key("baseBuffer");
   baseCamera->set_tag_state("isParticle", isSmokeNP.get_state());
+  baseCamera->set_tag_state("isWater",    isWaterNP.get_state());
   baseCamera->set_camera_mask(BitMask32::bit(6));
   smokeNP.set_tag("baseBuffer", "isParticle");
-  waterNP.hide(BitMask32::bit(6));
-  PT(Texture) baseTexture = baseBuffer->get_texture();
+  waterNP.set_tag("baseBuffer", "isWater");
+  PT(Texture) baseTexture     = baseBuffer->get_texture(0);
+  PT(Texture) specularTexture = baseBuffer->get_texture(1);
 
-  framebufferTextureArguments.name = "specular";
-
-  FramebufferTexture specularFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) specularBuffer = specularFramebufferTexture.buffer;
-  PT(Camera)         specularCamera = specularFramebufferTexture.camera;
-  NodePath           specularNP     = specularFramebufferTexture.shaderNP;
-  specularBuffer->set_sort(ssaoBlurBuffer->get_sort() + 1);
-  specularNP.set_shader(baseShader);
-  specularNP.set_shader_input("pi",                PI_SHADER_INPUT);
-  specularNP.set_shader_input("gamma",             GAMMA_SHADER_INPUT);
-  specularNP.set_shader_input("ssaoBlurTexture",   ssaoBlurTexture);
-  specularNP.set_shader_input("flowTexture",       stillFlowTexture);
-  specularNP.set_shader_input("normalMapsEnabled", normalMapsEnabled);
-  specularNP.set_shader_input("blinnPhongEnabled", blinnPhongEnabled);
-  specularNP.set_shader_input("celShadingEnabled", celShadingEnabled);
-  specularNP.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
-  specularNP.set_shader_input("specularOnly",      LVecBase2f(1, 1));
-  specularNP.set_shader_input("isParticle",        LVecBase2f(0, 0));
-  specularNP.set_shader_input("sunPosition",       LVecBase2f(sunlightP, 0));
-  specularCamera->set_initial_state(specularNP.get_state());
-  specularCamera->set_tag_state_key("specularBuffer");
-  specularCamera->set_tag_state("isWater", isWaterNP.get_state());
-  specularCamera->set_camera_mask(BitMask32::bit(7));
-  waterNP.set_tag("specularBuffer", "isWater");
-  smokeNP.hide(BitMask32::bit(7));
-  PT(Texture) specularTexture = specularBuffer->get_texture();
-
+  framebufferTextureArguments.aux_rgba = 0;
   framebufferTextureArguments.useScene = false;
-  framebufferTextureArguments.name     = "outline";
-
-  FramebufferTexture outlineFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) outlineBuffer = outlineFramebufferTexture.buffer;
-  PT(Camera)         outlineCamera = outlineFramebufferTexture.camera;
-  NodePath           outlineNP     = outlineFramebufferTexture.shaderNP;
-  outlineBuffer->set_sort(baseBuffer->get_sort() + 1);
-  outlineNP.set_shader(outlineShader);
-  outlineNP.set_shader_input("gamma",               GAMMA_SHADER_INPUT);
-  outlineNP.set_shader_input("positionTexture",     positionTexture0);
-  outlineNP.set_shader_input("colorTexture",        baseTexture);
-  outlineNP.set_shader_input("noiseTexture",        colorNoiseTexture);
-  outlineNP.set_shader_input("nearFar",             LVecBase2f(cameraNear, cameraFar));
-  outlineNP.set_shader_input("depthOfFieldEnabled", depthOfFieldEnabled);
-  outlineNP.set_shader_input("enabled",             outlineEnabled);
-  outlineCamera->set_initial_state(outlineNP.get_state());
-  PT(Texture) outlineTexture = outlineBuffer->get_texture();
-
-  framebufferTextureArguments.name = "refraction";
+  framebufferTextureArguments.name     = "refraction";
 
   FramebufferTexture refractionFramebufferTexture =
     generateFramebufferTexture
@@ -853,7 +859,7 @@ int main
   refractionNP.set_shader_input("pi",                     PI_SHADER_INPUT);
   refractionNP.set_shader_input("gamma",                  GAMMA_SHADER_INPUT);
   refractionNP.set_shader_input("uvTexture",              refractionUvTexture);
-  refractionNP.set_shader_input("maskTexture",            materialSpecularTexture);
+  refractionNP.set_shader_input("maskTexture",            refractionMaskTexture);
   refractionNP.set_shader_input("positionFromTexture",    positionTexture1);
   refractionNP.set_shader_input("positionToTexture",      positionTexture0);
   refractionNP.set_shader_input("backgroundColorTexture", baseTexture);
@@ -877,6 +883,7 @@ int main
   foamNP.set_shader_input("maskTexture",         foamMaskTexture);
   foamNP.set_shader_input("foamDepth",           foamDepth);
   foamNP.set_shader_input("sunPosition",         LVecBase2f(sunlightP, 0));
+  foamNP.set_shader_input("viewWorldMat",        currentViewWorldMat);
   foamNP.set_shader_input("positionFromTexture", positionTexture1);
   foamNP.set_shader_input("positionToTexture",   positionTexture0);
   foamCamera->set_initial_state(foamNP.get_state());
@@ -891,10 +898,10 @@ int main
   PT(GraphicsOutput) reflectionColorBuffer = reflectionColorFramebufferTexture.buffer;
   PT(Camera)         reflectionColorCamera = reflectionColorFramebufferTexture.camera;
   NodePath           reflectionColorNP     = reflectionColorFramebufferTexture.shaderNP;
-  reflectionColorBuffer->set_sort(baseBuffer->get_sort() + 1);
+  reflectionColorBuffer->set_sort(refractionBuffer->get_sort() + 1);
   reflectionColorNP.set_shader(reflectionColorShader);
-  reflectionColorNP.set_shader_input("colorTexture",      baseTexture);
-  reflectionColorNP.set_shader_input("uvTexture",         reflectionUvTexture);
+  reflectionColorNP.set_shader_input("colorTexture", refractionTexture);
+  reflectionColorNP.set_shader_input("uvTexture",    reflectionUvTexture);
   reflectionColorCamera->set_initial_state(reflectionColorNP.get_state());
   PT(Texture) reflectionColorTexture = reflectionColorBuffer->get_texture();
 
@@ -926,7 +933,7 @@ int main
   reflectionNP.set_shader(reflectionShader);
   reflectionNP.set_shader_input("colorTexture",     reflectionColorTexture);
   reflectionNP.set_shader_input("colorBlurTexture", reflectionColorBlurTexture);
-  reflectionNP.set_shader_input("specularTexture",  materialSpecularTexture);
+  reflectionNP.set_shader_input("maskTexture",      reflectionMaskTexture);
   reflectionFramebufferTexture.camera->set_initial_state(reflectionNP.get_state());
   PT(Texture) reflectionTexture = reflectionBuffer->get_texture();
 
@@ -965,22 +972,6 @@ int main
   sharpenCamera->set_initial_state(sharpenNP.get_state());
   PT(Texture) sharpenTexture = sharpenBuffer->get_texture();
 
-  framebufferTextureArguments.name = "painterly";
-
-  FramebufferTexture painterlyFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) painterlyBuffer = painterlyFramebufferTexture.buffer;
-  NodePath           painterlyNP     = painterlyFramebufferTexture.shaderNP;
-  painterlyBuffer->set_sort(sharpenBuffer->get_sort() + 1);
-  painterlyNP.set_shader(kuwaharaFilterShader);
-  painterlyNP.set_shader_input("colorTexture", sharpenTexture);
-  painterlyNP.set_shader_input("parameters",   LVecBase2f(0, 0));
-  PT(Camera) painterlyCamera = painterlyFramebufferTexture.camera;
-  painterlyCamera->set_initial_state(painterlyNP.get_state());
-  PT(Texture) painterlyTexture = painterlyBuffer->get_texture();
-
   framebufferTextureArguments.name = "posterize";
 
   FramebufferTexture posterizeFramebufferTexture =
@@ -989,10 +980,10 @@ int main
       );
   PT(GraphicsOutput) posterizeBuffer = posterizeFramebufferTexture.buffer;
   NodePath           posterizeNP     = posterizeFramebufferTexture.shaderNP;
-  posterizeBuffer->set_sort(painterlyBuffer->get_sort() + 1);
+  posterizeBuffer->set_sort(sharpenBuffer->get_sort() + 1);
   posterizeNP.set_shader(posterizeShader);
   posterizeNP.set_shader_input("gamma",           GAMMA_SHADER_INPUT);
-  posterizeNP.set_shader_input("colorTexture",    painterlyTexture);
+  posterizeNP.set_shader_input("colorTexture",    sharpenTexture);
   posterizeNP.set_shader_input("positionTexture", positionTexture2);
   posterizeNP.set_shader_input("enabled",         posterizeEnabled);
   PT(Camera) posterizeCamera = posterizeFramebufferTexture.camera;
@@ -1026,15 +1017,15 @@ int main
   NodePath           sceneCombineNP     = sceneCombineFramebufferTexture.shaderNP;
   sceneCombineBuffer->set_sort(bloomBuffer->get_sort() + 1);
   sceneCombineNP.set_shader(sceneCombineShader);
-  sceneCombineNP.set_shader_input("pi",               PI_SHADER_INPUT);
-  sceneCombineNP.set_shader_input("gamma",            GAMMA_SHADER_INPUT);
-  sceneCombineNP.set_shader_input("backgroundColor0", backgroundColor[0]);
-  sceneCombineNP.set_shader_input("backgroundColor1", backgroundColor[1]);
-  sceneCombineNP.set_shader_input("baseTexture",      posterizeTexture);
-  sceneCombineNP.set_shader_input("bloomTexture",     bloomTexture);
-  sceneCombineNP.set_shader_input("outlineTexture",   outlineTexture);
-  sceneCombineNP.set_shader_input("fogTexture",       fogTexture);
-  sceneCombineNP.set_shader_input("sunPosition",      LVecBase2f(sunlightP, 0));
+  sceneCombineNP.set_shader_input("pi",                  PI_SHADER_INPUT);
+  sceneCombineNP.set_shader_input("gamma",               GAMMA_SHADER_INPUT);
+  sceneCombineNP.set_shader_input("lookupTableTextureN", colorLookupTableTextureN);
+  sceneCombineNP.set_shader_input("backgroundColor0",    backgroundColor[0]);
+  sceneCombineNP.set_shader_input("backgroundColor1",    backgroundColor[1]);
+  sceneCombineNP.set_shader_input("baseTexture",         posterizeTexture);
+  sceneCombineNP.set_shader_input("bloomTexture",        bloomTexture);
+  sceneCombineNP.set_shader_input("fogTexture",          fogTexture);
+  sceneCombineNP.set_shader_input("sunPosition",         LVecBase2f(sunlightP, 0));
   PT(Texture) sceneCombineTexture = sceneCombineBuffer->get_texture();
   sceneCombineCamera->set_initial_state(sceneCombineNP.get_state());
 
@@ -1051,7 +1042,7 @@ int main
   outOfFocusBuffer->set_sort(sceneCombineBuffer->get_sort() + 1);
   outOfFocusNP.set_shader(boxBlurShader);
   outOfFocusNP.set_shader_input("colorTexture", sceneCombineTexture);
-  outOfFocusNP.set_shader_input("parameters",   LVecBase2f(4, 1));
+  outOfFocusNP.set_shader_input("parameters",   LVecBase2f(2, 2));
   outOfFocusCamera->set_initial_state(outOfFocusNP.get_state());
   PT(Texture) outOfFocusTexture = outOfFocusBuffer->get_texture();
 
@@ -1071,7 +1062,8 @@ int main
   dilatedOutOfFocusCamera->set_initial_state(dilatedOutOfFocusNP.get_state());
   PT(Texture) dilatedOutOfFocusTexture = dilatedOutOfFocusBuffer->get_texture();
 
-  framebufferTextureArguments.name = "depthOfField";
+  framebufferTextureArguments.aux_rgba = 1;
+  framebufferTextureArguments.name     = "depthOfField";
 
   FramebufferTexture depthOfFieldFramebufferTexture =
     generateFramebufferTexture
@@ -1079,19 +1071,64 @@ int main
       );
   PT(GraphicsOutput) depthOfFieldBuffer = depthOfFieldFramebufferTexture.buffer;
   NodePath           depthOfFieldNP     = depthOfFieldFramebufferTexture.shaderNP;
+  depthOfFieldBuffer->add_render_texture
+    ( NULL
+    , GraphicsOutput::RTM_bind_or_copy
+    , GraphicsOutput::RTP_aux_rgba_0
+    );
+  depthOfFieldBuffer->set_clear_active(3, true);
+  depthOfFieldBuffer->set_clear_value( 3, framebufferTextureArguments.clearColor);
   depthOfFieldBuffer->set_sort(dilatedOutOfFocusBuffer->get_sort() + 1);
   depthOfFieldNP.set_shader(depthOfFieldShader);
   depthOfFieldNP.set_shader_input("positionTexture",   positionTexture0);
-  depthOfFieldNP.set_shader_input("noiseTexture",      colorNoiseTexture);
   depthOfFieldNP.set_shader_input("focusTexture",      sceneCombineTexture);
   depthOfFieldNP.set_shader_input("outOfFocusTexture", dilatedOutOfFocusTexture);
   depthOfFieldNP.set_shader_input("mouseFocusPoint",   mouseFocusPoint);
-  depthOfFieldNP.set_shader_input("nearFar",           LVecBase2f(cameraNear, cameraFar));
-  depthOfFieldNP.set_shader_input("outlineEnabled",    outlineEnabled);
+  depthOfFieldNP.set_shader_input("nearFar",           cameraNearFar);
   depthOfFieldNP.set_shader_input("enabled",           depthOfFieldEnabled);
   PT(Camera) depthOfFieldCamera = depthOfFieldFramebufferTexture.camera;
   depthOfFieldCamera->set_initial_state(depthOfFieldNP.get_state());
-  PT(Texture) depthOfFieldTexture = depthOfFieldBuffer->get_texture();
+  PT(Texture) depthOfFieldTexture0 = depthOfFieldBuffer->get_texture(0);
+  PT(Texture) depthOfFieldTexture1 = depthOfFieldBuffer->get_texture(1);
+
+  framebufferTextureArguments.aux_rgba = 0;
+  framebufferTextureArguments.name     = "outline";
+
+  FramebufferTexture outlineFramebufferTexture =
+    generateFramebufferTexture
+      ( framebufferTextureArguments
+      );
+  PT(GraphicsOutput) outlineBuffer = outlineFramebufferTexture.buffer;
+  PT(Camera)         outlineCamera = outlineFramebufferTexture.camera;
+  NodePath           outlineNP     = outlineFramebufferTexture.shaderNP;
+  outlineBuffer->set_sort(depthOfFieldBuffer->get_sort() + 1);
+  outlineNP.set_shader(outlineShader);
+  outlineNP.set_shader_input("gamma",               GAMMA_SHADER_INPUT);
+  outlineNP.set_shader_input("positionTexture",     positionTexture0);
+  outlineNP.set_shader_input("colorTexture",        depthOfFieldTexture0);
+  outlineNP.set_shader_input("noiseTexture",        colorNoiseTexture);
+  outlineNP.set_shader_input("depthOfFieldTexture", depthOfFieldTexture1);
+  outlineNP.set_shader_input("fogTexture",          fogTexture);
+  outlineNP.set_shader_input("nearFar",             cameraNearFar);
+  outlineNP.set_shader_input("enabled",             outlineEnabled);
+  outlineCamera->set_initial_state(outlineNP.get_state());
+  PT(Texture) outlineTexture = outlineBuffer->get_texture();
+
+  framebufferTextureArguments.name = "painterly";
+
+  FramebufferTexture painterlyFramebufferTexture =
+    generateFramebufferTexture
+      ( framebufferTextureArguments
+      );
+  PT(GraphicsOutput) painterlyBuffer = painterlyFramebufferTexture.buffer;
+  NodePath           painterlyNP     = painterlyFramebufferTexture.shaderNP;
+  painterlyBuffer->set_sort(outlineBuffer->get_sort() + 1);
+  painterlyNP.set_shader(kuwaharaFilterShader);
+  painterlyNP.set_shader_input("colorTexture", outlineTexture);
+  painterlyNP.set_shader_input("parameters",   LVecBase2f(0, 0));
+  PT(Camera) painterlyCamera = painterlyFramebufferTexture.camera;
+  painterlyCamera->set_initial_state(painterlyNP.get_state());
+  PT(Texture) painterlyTexture = painterlyBuffer->get_texture();
 
   framebufferTextureArguments.name = "pixelize";
 
@@ -1101,16 +1138,36 @@ int main
       );
   PT(GraphicsOutput) pixelizeBuffer = pixelizeFramebufferTexture.buffer;
   NodePath           pixelizeNP     = pixelizeFramebufferTexture.shaderNP;
-  pixelizeBuffer->set_sort(depthOfFieldBuffer->get_sort() + 1);
+  pixelizeBuffer->set_sort(painterlyBuffer->get_sort() + 1);
   pixelizeNP.set_shader(pixelizeShader);
-  pixelizeNP.set_shader_input("colorTexture",    depthOfFieldTexture);
-  pixelizeNP.set_shader_input("outlineTexture",  outlineTexture);
+  pixelizeNP.set_shader_input("colorTexture",    painterlyTexture);
   pixelizeNP.set_shader_input("positionTexture", positionTexture2);
   pixelizeNP.set_shader_input("parameters",      LVecBase2f(5, 0));
   pixelizeNP.set_shader_input("enabled",         pixelizeEnabled);
   PT(Camera) pixelizeCamera = pixelizeFramebufferTexture.camera;
   pixelizeCamera->set_initial_state(pixelizeNP.get_state());
   PT(Texture) pixelizeTexture = pixelizeBuffer->get_texture();
+
+  framebufferTextureArguments.name = "motionBlur";
+
+  FramebufferTexture motionBlurFramebufferTexture =
+    generateFramebufferTexture
+      ( framebufferTextureArguments
+      );
+  PT(GraphicsOutput) motionBlurBuffer = motionBlurFramebufferTexture.buffer;
+  NodePath           motionBlurNP     = motionBlurFramebufferTexture.shaderNP;
+  motionBlurBuffer->set_sort(pixelizeBuffer->get_sort() + 1);
+  motionBlurNP.set_shader(motionBlurShader);
+  motionBlurNP.set_shader_input("previousViewWorldMat",    previousViewWorldMat);
+  motionBlurNP.set_shader_input("worldViewMat",            render.get_transform(cameraNP)->get_mat());
+  motionBlurNP.set_shader_input("lensProjection",          geometryCameraLens2->get_projection_mat());
+  motionBlurNP.set_shader_input("positionTexture",         positionTexture2);
+  motionBlurNP.set_shader_input("colorTexture",            pixelizeTexture);
+  motionBlurNP.set_shader_input("motionBlurEnabled",       motionBlurEnabled);
+  motionBlurNP.set_shader_input("parameters",              LVecBase2f(2, 1.0));
+  PT(Camera) motionBlurCamera = motionBlurFramebufferTexture.camera;
+  motionBlurCamera->set_initial_state(motionBlurNP.get_state());
+  PT(Texture) motionBlurTexture = motionBlurBuffer->get_texture();
 
   framebufferTextureArguments.name = "filmGrain";
 
@@ -1120,10 +1177,10 @@ int main
       );
   PT(GraphicsOutput) filmGrainBuffer = filmGrainFramebufferTexture.buffer;
   NodePath           filmGrainNP     = filmGrainFramebufferTexture.shaderNP;
-  filmGrainBuffer->set_sort(pixelizeBuffer->get_sort() + 1);
+  filmGrainBuffer->set_sort(motionBlurBuffer->get_sort() + 1);
   filmGrainNP.set_shader(filmGrainShader);
   filmGrainNP.set_shader_input("pi",           PI_SHADER_INPUT);
-  filmGrainNP.set_shader_input("colorTexture", pixelizeTexture);
+  filmGrainNP.set_shader_input("colorTexture", motionBlurTexture);
   filmGrainNP.set_shader_input("enabled",      filmGrainEnabled);
   PT(Camera) filmGrainCamera = filmGrainFramebufferTexture.camera;
   filmGrainCamera->set_initial_state(filmGrainNP.get_state());
@@ -1142,6 +1199,7 @@ int main
   lookupTableNP.set_shader_input("pi",                  PI_SHADER_INPUT);
   lookupTableNP.set_shader_input("gamma",               GAMMA_SHADER_INPUT);
   lookupTableNP.set_shader_input("colorTexture",        filmGrainTexture);
+  lookupTableNP.set_shader_input("lookupTableTextureN", colorLookupTableTextureN);
   lookupTableNP.set_shader_input("lookupTableTexture0", colorLookupTableTexture0);
   lookupTableNP.set_shader_input("lookupTableTexture1", colorLookupTableTexture1);
   lookupTableNP.set_shader_input("sunPosition",         LVecBase2f(sunlightP, 0));
@@ -1170,39 +1228,42 @@ int main
   int showBufferIndex = 0;
 
   std::vector<std::tuple<std::string, PT(GraphicsOutput), int>> bufferArray =
-    { std::make_tuple("Positions",        geometryBuffer0,           0)
-    , std::make_tuple("Normals",          geometryBuffer0,           1)
-    , std::make_tuple("Positions",        geometryBuffer1,           0)
-    , std::make_tuple("Normals",          geometryBuffer1,           1)
-    , std::make_tuple("Specular Map",     geometryBuffer1,           2)
-    , std::make_tuple("Foam Mask",        geometryBuffer1,           3)
-    , std::make_tuple("Positions",        geometryBuffer2,           0)
-    , std::make_tuple("Smoke Mask",       geometryBuffer2,           1)
-    , std::make_tuple("SSAO",             ssaoBuffer,                0)
-    , std::make_tuple("SSAO Blur",        ssaoBlurBuffer,            0)
-    , std::make_tuple("Specular",         specularBuffer,            0)
-    , std::make_tuple("Refraction UV",    refractionUvBuffer,        0)
-    , std::make_tuple("Refraction",       refractionBuffer,          0)
-    , std::make_tuple("Reflection UV",    reflectionUvBuffer,        0)
-    , std::make_tuple("Reflection Color", reflectionColorBuffer,     0)
-    , std::make_tuple("Reflection Blur",  reflectionColorBlurBuffer, 0)
-    , std::make_tuple("Reflection",       reflectionBuffer,          0)
-    , std::make_tuple("Foam",             foamBuffer,                0)
-    , std::make_tuple("Base",             baseBuffer,                0)
-    , std::make_tuple("Base Combine",     baseCombineBuffer,         0)
-    , std::make_tuple("Painterly",        painterlyBuffer,           0)
-    , std::make_tuple("Posterize",        posterizeBuffer,           0)
-    , std::make_tuple("Bloom",            bloomBuffer,               0)
-    , std::make_tuple("Outline",          outlineBuffer,             0)
-    , std::make_tuple("Fog",              fogBuffer,                 0)
-    , std::make_tuple("Scene Combine",    sceneCombineBuffer,        0)
-    , std::make_tuple("Out of Focus",     outOfFocusBuffer,          0)
-    , std::make_tuple("Dilation",         dilatedOutOfFocusBuffer,   0)
-    , std::make_tuple("Depth of Field",   depthOfFieldBuffer,        0)
-    , std::make_tuple("Pixelize",         pixelizeBuffer,            0)
-    , std::make_tuple("Film Grain",       filmGrainBuffer,           0)
-    , std::make_tuple("Lookup Table",     lookupTableBuffer,         0)
-    , std::make_tuple("Gamma Correction", gammaCorrectionBuffer,     0)
+    { std::make_tuple("Positions 0",          geometryBuffer0,           0)
+    , std::make_tuple("Normals 0",            geometryBuffer0,           1)
+    , std::make_tuple("Positions 1",          geometryBuffer1,           0)
+    , std::make_tuple("Normals 1",            geometryBuffer1,           1)
+    , std::make_tuple("Reflection Mask",      geometryBuffer1,           2)
+    , std::make_tuple("Refraction Mask",      geometryBuffer1,           3)
+    , std::make_tuple("Foam Mask",            geometryBuffer1,           4)
+    , std::make_tuple("Positions 2",          geometryBuffer2,           0)
+    , std::make_tuple("Smoke Mask",           geometryBuffer2,           1)
+    , std::make_tuple("SSAO",                 ssaoBuffer,                0)
+    , std::make_tuple("SSAO Blur",            ssaoBlurBuffer,            0)
+    , std::make_tuple("Refraction UV",        refractionUvBuffer,        0)
+    , std::make_tuple("Refraction",           refractionBuffer,          0)
+    , std::make_tuple("Reflection UV",        reflectionUvBuffer,        0)
+    , std::make_tuple("Reflection Color",     reflectionColorBuffer,     0)
+    , std::make_tuple("Reflection Blur",      reflectionColorBlurBuffer, 0)
+    , std::make_tuple("Reflection",           reflectionBuffer,          0)
+    , std::make_tuple("Foam",                 foamBuffer,                0)
+    , std::make_tuple("Base",                 baseBuffer,                0)
+    , std::make_tuple("Specular",             baseBuffer,                1)
+    , std::make_tuple("Base Combine",         baseCombineBuffer,         0)
+    , std::make_tuple("Painterly",            painterlyBuffer,           0)
+    , std::make_tuple("Posterize",            posterizeBuffer,           0)
+    , std::make_tuple("Bloom",                bloomBuffer,               0)
+    , std::make_tuple("Outline",              outlineBuffer,             0)
+    , std::make_tuple("Fog",                  fogBuffer,                 0)
+    , std::make_tuple("Scene Combine",        sceneCombineBuffer,        0)
+    , std::make_tuple("Out of Focus",         outOfFocusBuffer,          0)
+    , std::make_tuple("Dilation",             dilatedOutOfFocusBuffer,   0)
+    , std::make_tuple("Depth of Field Blur",  depthOfFieldBuffer,        1)
+    , std::make_tuple("Depth of Field",       depthOfFieldBuffer,        0)
+    , std::make_tuple("Pixelize",             pixelizeBuffer,            0)
+    , std::make_tuple("Motion Blur",          motionBlurBuffer,          0)
+    , std::make_tuple("Film Grain",           filmGrainBuffer,           0)
+    , std::make_tuple("Lookup Table",         lookupTableBuffer,         0)
+    , std::make_tuple("Gamma Correction",     gammaCorrectionBuffer,     0)
     };
 
   showBufferIndex = bufferArray.size() - 1;
@@ -1214,8 +1275,9 @@ int main
     , false
     );
 
-  shuttersAnimationCollection.play("open-shutters");
+  shuttersAnimationCollection.play(   "close-shutters"          );
   weatherVaneAnimationCollection.loop("weather-vane-shake", true);
+  bannerAnimationCollection.loop(     "banner-swing",       true);
 
   int then          = microsecondsSinceEpoch();
   int loopStartedAt = then;
@@ -1279,6 +1341,12 @@ int main
     bool arrowLeftDown    = isButtonDown(mouseWatcher, "arrow_left");
     bool arrowRightDown   = isButtonDown(mouseWatcher, "arrow_right");
 
+    bool middayDown       = isButtonDown(mouseWatcher, "1");
+    bool midnightDown     = isButtonDown(mouseWatcher, "2");
+    bool fresnelDown      = isButtonDown(mouseWatcher, "3");
+    bool rimLightDown     = isButtonDown(mouseWatcher, "4");
+    bool particlesDown    = isButtonDown(mouseWatcher, "5");
+    bool motionBlurDown   = isButtonDown(mouseWatcher, "6");
     bool painterlyDown    = isButtonDown(mouseWatcher, "7");
     bool celShadingDown   = isButtonDown(mouseWatcher, "8");
     bool lookupTableDown  = isButtonDown(mouseWatcher, "9");
@@ -1333,8 +1401,8 @@ int main
     if (cameraRotatePhi    <  0)               cameraRotatePhi    = 360 - cameraRotateTheta;
     if (cameraRotateTheta  >  360)             cameraRotateTheta  = cameraRotateTheta - 360;
     if (cameraRotateTheta  <  0)               cameraRotateTheta  = 360 - cameraRotateTheta;
-    if (cameraRotateRadius <= cameraNear + 10) cameraRotateRadius = cameraNear + 10;
-    if (cameraRotateRadius >= cameraFar  - 10) cameraRotateRadius = cameraFar  - 10;
+    if (cameraRotateRadius < cameraNear +  5)  cameraRotateRadius = cameraNear +  5;
+    if (cameraRotateRadius > cameraFar  - 10)  cameraRotateRadius = cameraFar  - 10;
 
     if (arrowUpDown) {
       cameraUpDownAdjust = -2 * delta;
@@ -1372,13 +1440,12 @@ int main
     }
 
     if (shiftDown && fogNearDown) {
-      fogNear -= fogAdjust;
-      if (fogNear <= 0 ) fogNear = 0;
+      fogNear += fogAdjust;
 
       statusAlpha = 1.0;
       statusText  = "Fog Near " + std::to_string(fogNear);
     } else if (fogNearDown) {
-      fogNear += fogAdjust;
+      fogNear -= fogAdjust;
 
       statusAlpha = 1.0;
       statusText  = "Fog Near " + std::to_string(fogNear);
@@ -1386,7 +1453,6 @@ int main
 
     if (shiftDown && fogFarDown) {
       fogFar -= fogAdjust;
-      if (fogFar <= 0 ) fogFar = 0;
 
       statusAlpha = 1.0;
       statusText  = "Fog Far " + std::to_string(fogFar);
@@ -1574,6 +1640,26 @@ int main
           );
       }
 
+      if (fresnelDown) {
+        fresnelEnabled = toggleEnabledVec(fresnelEnabled);
+        keyTime = now;
+
+        toggleStatus
+          ( fresnelEnabled
+          , "Fresnel"
+          );
+      }
+
+      if (rimLightDown) {
+        rimLightEnabled = toggleEnabledVec(rimLightEnabled);
+        keyTime = now;
+
+        toggleStatus
+          ( rimLightEnabled
+          , "Rim Light"
+          );
+      }
+
       if (blinnPhongDown) {
         blinnPhongEnabled = toggleEnabledVec(blinnPhongEnabled);
         keyTime = now;
@@ -1611,6 +1697,16 @@ int main
         toggleStatus
           ( painterlyEnabled
           , "Painterly"
+          );
+      }
+
+      if (motionBlurDown) {
+        motionBlurEnabled = toggleEnabledVec(motionBlurEnabled);
+        keyTime = now;
+
+        toggleStatus
+          ( motionBlurEnabled
+          , "Motion Blur"
           );
       }
 
@@ -1686,6 +1782,19 @@ int main
           , "Sun Animation"
           );
       }
+
+      if (particlesDown) {
+        keyTime = now;
+        statusAlpha = 1.0;
+
+        if (smokeNP.is_hidden()) {
+          smokeNP.show();
+          statusText = "Particles On";
+        } else {
+          smokeNP.hide();
+          statusText = "Particles Off";
+        }
+      }
     }
 
     if (flowMapsEnabled[0]) {
@@ -1696,16 +1805,25 @@ int main
       wheelNP.set_p(wheelP);
     }
 
-    if (animateSunlight) {
+    if (animateSunlight || middayDown || midnightDown) {
       sunlightP =
         animateLights
           ( render
           , shuttersAnimationCollection
           , delta
-          , -360 / 8
-          , switchedToNight
+          , -360.0 / 64.0
           , closedShutters
+          , middayDown
+          , midnightDown
           );
+
+      if (middayDown) {
+        statusAlpha = 1.0;
+        statusText = "Midday";
+      } else if (midnightDown) {
+        statusAlpha = 1.0;
+        statusText = "Midnight";
+      }
     }
 
     cameraLookAt =
@@ -1728,6 +1846,8 @@ int main
 
     cameraNP.look_at(cameraLookAt);
 
+    currentViewWorldMat = cameraNP.get_transform(render)->get_mat();
+
     geometryNP0.set_shader_input("normalMapsEnabled", normalMapsEnabled);
     geometryNP0.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
     geometryCamera0->set_initial_state(geometryNP0.get_state());
@@ -1737,6 +1857,7 @@ int main
     geometryCamera1->set_initial_state(geometryNP1.get_state());
 
     fogNP.set_shader_input("sunPosition",   LVecBase2f(sunlightP, 0));
+    fogNP.set_shader_input("origin",        cameraNP.get_relative_point(render, environmentNP.get_pos()));
     fogNP.set_shader_input("nearFar",       LVecBase2f(fogNear, fogFar));
     fogNP.set_shader_input("enabled",       fogEnabled);
     fogCamera->set_initial_state(fogNP.get_state());
@@ -1754,30 +1875,25 @@ int main
     reflectionUvNP.set_shader_input("enabled",        reflectionEnabled);
     reflectionUvCamera->set_initial_state(reflectionUvNP.get_state());
 
-    foamNP.set_shader_input("foamDepth",   foamDepth);
-    foamNP.set_shader_input("sunPosition", LVecBase2f(sunlightP, 0));
+    foamNP.set_shader_input("foamDepth",    foamDepth);
+    foamNP.set_shader_input("viewWorldMat", currentViewWorldMat);
+    foamNP.set_shader_input("sunPosition",  LVecBase2f(sunlightP, 0));
     foamCamera->set_initial_state(foamNP.get_state());
 
     bloomNP.set_shader_input("enabled", bloomEnabled);
     bloomCamera->set_initial_state(bloomNP.get_state());
 
     outlineNP.set_shader_input("enabled",             outlineEnabled);
-    outlineNP.set_shader_input("depthOfFieldEnabled", depthOfFieldEnabled);
     outlineCamera->set_initial_state(outlineNP.get_state());
 
     baseNP.set_shader_input("sunPosition",       LVecBase2f(sunlightP, 0));
     baseNP.set_shader_input("normalMapsEnabled", normalMapsEnabled);
     baseNP.set_shader_input("blinnPhongEnabled", blinnPhongEnabled);
+    baseNP.set_shader_input("fresnelEnabled",    fresnelEnabled);
+    baseNP.set_shader_input("rimLightEnabled",   rimLightEnabled);
     baseNP.set_shader_input("celShadingEnabled", celShadingEnabled);
     baseNP.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
     baseCamera->set_initial_state(baseNP.get_state());
-
-    specularNP.set_shader_input("sunPosition",       LVecBase2f(sunlightP, 0));
-    specularNP.set_shader_input("normalMapsEnabled", normalMapsEnabled);
-    specularNP.set_shader_input("blinnPhongEnabled", blinnPhongEnabled);
-    specularNP.set_shader_input("celShadingEnabled", celShadingEnabled);
-    specularNP.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
-    specularCamera->set_initial_state(specularNP.get_state());
 
     refractionNP.set_shader_input("sunPosition", LVecBase2f(sunlightP, 0));
     refractionCamera->set_initial_state(refractionNP.get_state());
@@ -1789,12 +1905,17 @@ int main
     sceneCombineCamera->set_initial_state(sceneCombineNP.get_state());
 
     depthOfFieldNP.set_shader_input("mouseFocusPoint", mouseFocusPoint);
-    depthOfFieldNP.set_shader_input("outlineEnabled",  outlineEnabled);
     depthOfFieldNP.set_shader_input("enabled",         depthOfFieldEnabled);
     depthOfFieldCamera->set_initial_state(depthOfFieldNP.get_state());
 
-    painterlyNP.set_shader_input("parameters", LVecBase2f(painterlyEnabled[0] == 1 ? 5 : 0, 0));
+    painterlyNP.set_shader_input("parameters", LVecBase2f(painterlyEnabled[0] == 1 ? 3 : 0, 0));
     painterlyCamera->set_initial_state(painterlyNP.get_state());
+
+    motionBlurNP.set_shader_input("previousViewWorldMat",   previousViewWorldMat);
+    motionBlurNP.set_shader_input("worldViewMat",           render.get_transform(cameraNP)->get_mat());
+    motionBlurNP.set_shader_input("lensProjection",         geometryCameraLens1->get_projection_mat());
+    motionBlurNP.set_shader_input("motionBlurEnabled",      motionBlurEnabled);
+    motionBlurCamera->set_initial_state(motionBlurNP.get_state());
 
     posterizeNP.set_shader_input("enabled", posterizeEnabled);
     posterizeCamera->set_initial_state(posterizeNP.get_state());
@@ -1809,10 +1930,14 @@ int main
     lookupTableNP.set_shader_input("sunPosition", LVecBase2f(sunlightP, 0));
     lookupTableCamera->set_initial_state(lookupTableNP.get_state());
 
-    statusAlpha    = statusAlpha - ((1.0 / statusFadeRate) * delta);
-    statusAlpha    = statusAlpha < 0.0 ? 0.0 : statusAlpha;
-    statusColor[3] = statusAlpha;
+    previousViewWorldMat = currentViewWorldMat;
+
+    statusAlpha          = statusAlpha - ((1.0 / statusFadeRate) * delta);
+    statusAlpha          = statusAlpha < 0.0 ? 0.0 : statusAlpha;
+    statusColor[3]       = statusAlpha;
+    statusShadowColor[3] = statusAlpha;
     status->set_text_color(statusColor);
+    status->set_shadow_color(statusShadowColor);
     status->set_text(statusText);
 
     updateAudoManager
@@ -1890,8 +2015,8 @@ int main
     , 0
     );
 
-  sounds[0]->set_3d_min_distance(100);
-  sounds[1]->set_3d_min_distance(150);
+  sounds[0]->set_3d_min_distance(60);
+  sounds[1]->set_3d_min_distance(50);
 
   framework.main_loop();
 
@@ -1922,19 +2047,19 @@ void generateLights
 
   PT(DirectionalLight) sunlight = new DirectionalLight("sunlight");
   sunlight->set_color(sunlightColor1);
-  sunlight->set_shadow_caster(true, 2048, 2048);
+  sunlight->set_shadow_caster(true, SHADOW_SIZE, SHADOW_SIZE);
   sunlight->get_lens()->set_film_size(35, 35);
-  sunlight->get_lens()->set_near_far(0.1, 35);
+  sunlight->get_lens()->set_near_far(5.0, 35.0);
   if (showLights) sunlight->show_frustum();
   NodePath sunlightNP = render.attach_new_node(sunlight);
   sunlightNP.set_name("sunlight");
   render.set_light(sunlightNP);
 
   PT(DirectionalLight) moonlight = new DirectionalLight("moonlight");
-  moonlight->set_color(LColor(0.0, 0.0, 1.0, 1.0));
-  moonlight->set_shadow_caster(true, 2048, 2048);
+  moonlight->set_color(moonlightColor1);
+  moonlight->set_shadow_caster(true, SHADOW_SIZE, SHADOW_SIZE);
   moonlight->get_lens()->set_film_size(35, 35);
-  moonlight->get_lens()->set_near_far(0.1, 35);
+  moonlight->get_lens()->set_near_far(5.0, 35);
   if (showLights) moonlight->show_frustum();
   NodePath moonlightNP = render.attach_new_node(moonlight);
   moonlightNP.set_name("moonlight");
@@ -1959,7 +2084,7 @@ void generateLights
     , render
     , LVecBase3
         ( 1.5
-        , 2.21
+        , 2.49
         , 7.9
         )
     , showLights
@@ -1969,7 +2094,7 @@ void generateLights
     , render
     , LVecBase3
         ( 3.5
-        , 2.21
+        , 2.49
         , 7.9
         )
     , showLights
@@ -1979,7 +2104,7 @@ void generateLights
     , render
     , LVecBase3
         ( 3.5
-        , 1.1
+        , 1.49
         , 4.5
         )
     , showLights
@@ -1994,18 +2119,16 @@ void generateWindowLight
   ) {
   PT(Spotlight) windowLight = new Spotlight(name);
   windowLight->set_color(windowLightColor);
-  windowLight->set_exponent(0.5);
+  windowLight->set_exponent(5);
   windowLight->set_attenuation(LVecBase3(1, 0.008, 0));
   windowLight->set_max_distance(37);
 
   PT(PerspectiveLens) windowLightLens = new PerspectiveLens();
   windowLightLens->set_near_far(0.5, 12);
-  windowLightLens->set_fov(175);
+  windowLightLens->set_fov(140);
   windowLight->set_lens(windowLightLens);
 
   if (show) windowLight->show_frustum();
-
-  windowLight->set_shadow_caster(true, 1024, 1024);
 
   NodePath windowLightNP = render.attach_new_node(windowLight);
   windowLightNP.set_name(name);
@@ -2019,9 +2142,21 @@ float animateLights
   , AnimControlCollection shuttersAnimationCollection
   , float delta
   , float speed
-  , bool& switchedToNight
   , bool& closedShutters
+  , bool  middayDown
+  , bool  midnightDown
   ) {
+  auto clamp =
+    []
+    ( float a
+    , float mn
+    , float mx
+    ) -> float {
+      if (a > mx) { a = mx; }
+      if (a < mn) { a = mn; }
+      return a;
+    };
+
   NodePath sunlightPivotNP  = render.find("**/sunlightPivot");
   NodePath moonlightPivotNP = render.find("**/moonlightPivot");
   NodePath sunlightNP       = render.find("**/sunlight");
@@ -2034,75 +2169,78 @@ float animateLights
 
   float           p  = sunlightPivotNP.get_p();
                   p += speed * delta;
-  if (p > 360) p =   0;
-  if (p < 0)   p = 360;
+  if (p > 360)    p =   0;
+  if (p < 0)      p = 360;
+
+  if (middayDown) {
+    p = 270;
+  } else if (midnightDown) {
+    p = 90;
+  }
+
   sunlightPivotNP.set_p( p      );
   moonlightPivotNP.set_p(p - 180);
 
-  auto getAdjust =
-    [&]
-    ( float center
-    , float width
-    , float power
-    ) -> float {
-    float  result = -1 * (pow(p - center, power) / pow(width, power)) + 1;
-           result = result < 0.0 ? 0.0 : result;
-    return result;
-    };
+  float mixFactor = 1.0 - (sin(toRadians(p)) / 2.0 + 0.5);
 
-  float adjust = getAdjust(270, 270 - 180, 4);
+  LColor sunlightColor  = mixColor(sunlightColor0,  sunlightColor1, mixFactor);
+  LColor moonlightColor = mixColor(moonlightColor1, sunlightColor0, mixFactor);
+  LColor lightColor     = mixColor(moonlightColor,  sunlightColor,  mixFactor);
 
-  auto mix =
-    [&]
-    ( LColor a
-    , LColor b
-    ) -> LColor {
-      return a * (1 - adjust) + b * adjust;
-    };
+  float dayTimeLightMagnitude   = clamp(-1 * sin(toRadians(p)), 0.0, 1.0);
+  float nightTimeLightMagnitude = clamp(     sin(toRadians(p)), 0.0, 1.0);
 
-  LColor sunlightColor = mix(sunlightColor0, sunlightColor1);
-  sunlight->set_color(sunlightColor * adjust);
+  sunlight->set_color( lightColor * dayTimeLightMagnitude);
+  moonlight->set_color(lightColor * nightTimeLightMagnitude);
 
-  adjust = getAdjust(90, 90, 4);
+  if (dayTimeLightMagnitude > 0.0) {
+    sunlight->set_shadow_caster(true, SHADOW_SIZE, SHADOW_SIZE);
+    render.set_light(sunlightNP);
+  } else {
+    sunlight->set_shadow_caster(false, 0, 0);
+    render.set_light_off(sunlightNP);
+  }
 
-  auto adjustWindowColor =
+  if (nightTimeLightMagnitude > 0.0) {
+    moonlight->set_shadow_caster(true, SHADOW_SIZE, SHADOW_SIZE);
+    render.set_light(moonlightNP);
+  } else {
+    moonlight->set_shadow_caster(false, 0, 0);
+    render.set_light_off(moonlightNP);
+  }
+
+  auto updateWindowLight =
     [&]
     ( std::string name
     ) -> void {
     NodePath windowLightNP = render.find("**/" + name);
     PT(Spotlight) windowLight = DCAST(Spotlight, windowLightNP.node());
-    windowLight->set_color(windowLightColor * adjust);
+
+    float windowLightMagnitude = pow(nightTimeLightMagnitude, 0.4);
+
+    windowLight->set_color(windowLightColor * windowLightMagnitude);
+
+    if (windowLightMagnitude <= 0.0) {
+      windowLight->set_shadow_caster(false, 0, 0);
+      render.set_light_off(windowLightNP);
+    } else {
+      windowLight->set_shadow_caster(true, SHADOW_SIZE, SHADOW_SIZE);
+      render.set_light(windowLightNP);
+    }
     };
 
-  adjustWindowColor("windowLight");
-  adjustWindowColor("windowLight1");
-  adjustWindowColor("windowLight2");
+  updateWindowLight("windowLight");
+  updateWindowLight("windowLight1");
+  updateWindowLight("windowLight2");
 
-  adjust = getAdjust(90, 90, 2);
-
-  LColor moonlightColor = mix(moonlightColor0, moonlightColor1);
-  moonlight->set_color(moonlightColor * adjust);
-
-  if (p < 180 && !switchedToNight) {
-    switchedToNight = true;
-
-    render.set_light_off(sunlightNP);
-    render.set_light(moonlightNP);
-  } else if (p >= 180 && switchedToNight) {
-    switchedToNight = false;
-
-    render.set_light(sunlightNP);
-    render.set_light_off(moonlightNP);
-  }
-
-  if (p <= 150 && p >= 130 && !closedShutters) {
-    closedShutters = true;
-
-    shuttersAnimationCollection.play("close-shutters");
-  } else if (p <= 310 && p >= 300 && closedShutters) {
+  if (mixFactor >= 0.3 && mixFactor <= 0.35 && closedShutters || midnightDown) {
     closedShutters = false;
 
     shuttersAnimationCollection.play("open-shutters");
+  } else if (mixFactor >= 0.6 && mixFactor <= 0.7 && !closedShutters || middayDown) {
+    closedShutters = true;
+
+    shuttersAnimationCollection.play("close-shutters");
   }
 
   return p;
@@ -2263,10 +2401,11 @@ FramebufferTexture generateFramebufferTexture
   }
 
   FramebufferTexture result;
-  result.buffer   = buffer;
-  result.camera   = camera;
-  result.cameraNP = cameraNP;
-  result.shaderNP = shaderNP;
+  result.buffer       = buffer;
+  result.bufferRegion = bufferRegion;
+  result.camera       = camera;
+  result.cameraNP     = cameraNP;
+  result.shaderNP     = shaderNP;
   return result;
   }
 
@@ -2412,7 +2551,7 @@ NodePath setUpParticles
   PT(ForceNode)      smokeFN = new ForceNode("smoke");
   PT(PhysicalNode)   smokePN = new PhysicalNode("smoke");
 
-  smokePS->set_pool_size(100);
+  smokePS->set_pool_size(75);
   smokePS->set_birth_rate(0.01);
   smokePS->set_litter_size(1);
   smokePS->set_litter_spread(2);
@@ -2489,7 +2628,7 @@ NodePath setUpParticles
   particleSystemManager.attach_particlesystem(smokePS);
   physicsManager.attach_physical(smokePS);
 
-  smokeNP.set_pos(0.47, 4.5, 8.4);
+  smokeNP.set_pos(0.47, 4.5, 8.9);
   smokeNP.set_transparency(TransparencyAttrib::M_dual);
   smokeNP.set_bin("fixed", 0);
 
@@ -2521,7 +2660,6 @@ void squashGeometry
   for (int i = 0; i < squashCollection.size(); ++i) {
     if  (   squashCollection[i].get_name() == "wheel-lp"
         ||  squashCollection[i].get_name() == "water-lp"
-        ||  squashCollection[i].get_name() == "grid-floor"
         ||  squashCollection[i].get_name() == "squash"
         ) { continue; }
     squashCollection[i].reparent_to(squashNP);
@@ -2566,4 +2704,12 @@ void setTextureToNearestAndClamp
     texture->set_wrap_u(SamplerState::WM_clamp);
     texture->set_wrap_v(SamplerState::WM_clamp);
     texture->set_wrap_w(SamplerState::WM_clamp);
+  }
+
+LColor mixColor
+  ( LColor a
+  , LColor b
+  , float factor
+  ) {
+    return a * (1 - factor) + b * factor;
   }

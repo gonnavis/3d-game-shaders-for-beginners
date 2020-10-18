@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Depth Of Field | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Depth Of Field | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Depth Of Field | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,14 +97,20 @@
 <p><a href="outlining.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="posterization.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="depth-of-field">Depth Of Field</h2>
-<p><img src="https://i.imgur.com/DEa77Bh.gif" alt="Depth Of Field" /></p>
+<p align="center">
+<img src="https://i.imgur.com/DEa77Bh.gif" alt="Depth Of Field" title="Depth Of Field">
+</p>
+
 <p>Like <a href="ssao.html">SSAO</a>, depth of field is an effect you can't live without once you've used it. Artistically, you can use it to draw your viewer's eye to a certain subject. But in general, depth of field adds a lot of realism for a little bit of effort.</p>
 <h3 id="in-focus">In Focus</h3>
 <p>The first step is to render your scene completely in focus. Be sure to render this into a framebuffer texture. This will be one of the inputs to the depth of field shader.</p>
 <h3 id="out-of-focus">Out Of Focus</h3>
 <p>The second step is to blur the scene as if it was completely out of focus. Like bloom and SSAO, you can use a <a href="blur.html#box-blur">box blur</a>. Be sure to render this out-of-focus-scene into a framebuffer texture. This will be one of the inputs to the depth of field shader.</p>
 <h4 id="bokeh">Bokeh</h4>
-<p><img src="https://i.imgur.com/aQ9Ga8J.gif" alt="Bokeh" /></p>
+<p align="center">
+<img src="https://i.imgur.com/aQ9Ga8J.gif" alt="Bokeh" title="Bokeh">
+</p>
+
 <p>For a great bokeh effect, dilate the out of focus texture and use that as the out of focus input. See <a href="dilation.html">dilation</a> for more details.</p>
 <h3 id="mixing">Mixing</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a>  <span class="co">// ...</span></span>
@@ -133,7 +140,10 @@
 <span id="cb4-5"><a href="#cb4-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>The focus point is a position somewhere in your scene. All of the points in your scene are measured from the focus point.</p>
 <p>Choosing the focus point is up to you. The demo uses the scene position directly under the mouse when clicking the middle mouse button. However, it could be a constant distance from the camera or a static position.</p>
-<p><img src="https://i.imgur.com/idDZr62.png" alt="smoothstep" /></p>
+<p align="center">
+<img src="https://i.imgur.com/idDZr62.png" alt="smoothstep" title="smoothstep">
+</p>
+
 <div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a>  <span class="co">// ...</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a>  <span class="dt">float</span> blur =</span>

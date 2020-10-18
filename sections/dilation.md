@@ -8,7 +8,9 @@
 
 ## Dilation
 
-![Dilation](https://i.imgur.com/z751O74.gif)
+<p align="center">
+<img src="https://i.imgur.com/z751O74.gif" alt="Dilation" title="Dilation">
+</p>
 
 Dilation dilates or enlarges the brighter areas of an image while at the same time,
 contracts or shrinks the darker areas of an image.
@@ -62,7 +64,9 @@ Sample the color at the current fragment's position.
 Loop through a `size` by `size` window, centered at the current fragment position.
 As you loop, find the brightest color based on the surrounding greyscale values.
 
-![Dilation Window](https://i.imgur.com/X3uIyIL.png)
+<p align="center">
+<img src="https://i.imgur.com/X3uIyIL.png" alt="Dilation Window" title="Dilation Window">
+</p>
 
 ```c
       // ...

@@ -8,7 +8,9 @@
 
 ## Blur
 
-![Kuwahara Filter](https://i.imgur.com/b5vw2AJ.gif)
+<p align="center">
+<img src="https://i.imgur.com/b5vw2AJ.gif" alt="Kuwahara Filter" title="Kuwahara Filter">
+</p>
 
 The need to blur this or that can come up quite often as you try to obtain
 a particular look or perform some technique like motion blur.
@@ -16,7 +18,9 @@ Below are just some of ways you can blur your game's imagery.
 
 ### Box Blur
 
-![Box Blur](https://i.imgur.com/uaXC1JM.gif)
+<p align="center">
+<img src="https://i.imgur.com/uaXC1JM.gif" alt="Box Blur" title="Box Blur">
+</p>
 
 The box blur or mean filter algorithm is a simple to implement blurring effect.
 It's fast and gets the job done.
@@ -49,7 +53,9 @@ If the `size` is zero or less, return the fragment untouched.
 The `separation` parameter spreads out the blur without having to sample additional fragments.
 `separation` ranges from one to infinity.
 
-![Blur Kernel](https://i.imgur.com/bRw0OkX.png)
+<p align="center">
+<img src="https://i.imgur.com/bRw0OkX.png" alt="Blur Kernel" title="Blur Kernel">
+</p>
 
 ```c
   // ...
@@ -100,7 +106,9 @@ The final fragment color is the mean or average of the fragments sampled inside 
 
 ### Median Filter
 
-![Median Filter](https://i.imgur.com/T1nEEn3.gif)
+<p align="center">
+<img src="https://i.imgur.com/T1nEEn3.gif" alt="Median Filter" title="Median Filter">
+</p>
 
 The box blur uses the mean color of the samples taken.
 The median filter uses the median color of the samples taken.
@@ -114,7 +122,9 @@ There is a technique to find the median in linear time but it can be quite awkwa
 The numerical approach below approximates the median in linear time.
 How well it approximates the median can be controlled.
 
-![Painterly](https://i.imgur.com/AnbzUmN.png)
+<p align="center">
+<img src="https://i.imgur.com/AnbzUmN.png" alt="Painterly" title="Painterly">
+</p>
 
 At lower quality approximations,
 you end up with a nice [painterly](https://en.wikipedia.org/wiki/Painterliness) look.
@@ -317,7 +327,9 @@ Set this color as the fragColor and exit the loop and shader.
 
 ### Kuwahara Filter
 
-![Kuwahara Filter](https://i.imgur.com/b5vw2AJ.gif)
+<p align="center">
+<img src="https://i.imgur.com/b5vw2AJ.gif" alt="Kuwahara Filter" title="Kuwahara Filter">
+</p>
 
 Like the median filter, the kuwahara filter preserves the major edges found in the image.
 You'll notice that it has a more block like or chunky pattern to it.
@@ -486,7 +498,9 @@ void main() {
 Back in `main`, set the `size` parameter.
 If the size is at or below zero, return the fragment unchanged.
 
-![Kuwahara Kernal](https://i.imgur.com/iuLbLKO.gif)
+<p align="center">
+<img src="https://i.imgur.com/iuLbLKO.gif" alt="Kuwahara Kernal" title="Kuwahara Kernal">
+</p>
 
 ```c
   // ...

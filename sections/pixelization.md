@@ -8,7 +8,9 @@
 
 ## Pixelization
 
-![Pixelization](https://i.imgur.com/IbnyYZN.gif)
+<p align="center">
+<img src="https://i.imgur.com/IbnyYZN.gif" alt="Pixelization" title="Pixelization">
+</p>
 
 Pixelizing your 3D game can give it a interesting look and
 possibly save you time by not having to create all of the pixel art by hand.
@@ -25,7 +27,9 @@ Combine it with the posterization for a true retro look.
 Feel free to adjust the pixel size.
 The bigger the pixel size, the blockier the image will be.
 
-![Pixelization Process](https://i.imgur.com/WF5MmM0.gif)
+<p align="center">
+<img src="https://i.imgur.com/WF5MmM0.gif" alt="Pixelization Process" title="Pixelization Process">
+</p>
 
 ```c
   // ...

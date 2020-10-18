@@ -6,7 +6,6 @@
 #version 150
 
 uniform sampler2D colorTexture;
-uniform sampler2D outlineTexture;
 uniform sampler2D positionTexture;
 
 uniform vec2 parameters;
@@ -23,9 +22,10 @@ void main() {
 
   // Avoid the background.
   vec4 position = texture(positionTexture, texCoord);
-  vec4 outline  = texture(outlineTexture,  texCoord);
-  if (enabled.x != 1 || position.a + outline.a <= 0.0) {
+
+  if (enabled.x != 1 || position.a <= 0.0) {
     fragColor = texture(colorTexture, texCoord);
+
     return;
   }
 

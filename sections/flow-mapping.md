@@ -8,13 +8,17 @@
 
 ## Flow Mapping
 
-![Flow Mapping](https://i.imgur.com/3WDO9xW.gif)
+<p align="center">
+<img src="https://i.imgur.com/3WDO9xW.gif" alt="Flow Mapping" title="Flow Mapping">
+</p>
 
 Flow mapping is useful when you need to animate some fluid material.
 Much like diffuse maps map UV coordinates to diffuse colors and normal maps map UV coordinates to normals,
 flow maps map UV coordinates to 2D translations or flows.
 
-![Flow Map](https://i.imgur.com/b9Vw94N.png)
+<p align="center">
+<img src="https://i.imgur.com/b9Vw94N.png" alt="Flow Map" title="Flow Map">
+</p>
 
 Here you see a flow map that maps UV coordinates to translations in the positive y-axis direction.
 Flow maps use the red and green channels to store translations in the x and y direction.
@@ -63,7 +67,9 @@ This indicates zero movement in the x direction and a movement of 0.2 in the y d
 The flows can be used to translate all sorts of things but they're typically used to
 offset the UV coordinates of a another texture.
 
-![Foam Mask](https://i.imgur.com/N6TWBw8.gif)
+<p align="center">
+<img src="https://i.imgur.com/N6TWBw8.gif" alt="Foam Mask" title="Foam Mask">
+</p>
 
 ```c
   // ...

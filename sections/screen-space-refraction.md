@@ -8,7 +8,9 @@
 
 ## Screen Space Refraction (SSR)
 
-![Screen Space Refraction](https://i.imgur.com/8Mdcn4y.gif)
+<p align="center">
+<img src="https://i.imgur.com/8Mdcn4y.gif" alt="Screen Space Refraction" title="Screen Space Refraction">
+</p>
 
 Screen space refraction,
 much like
@@ -42,7 +44,9 @@ The background vertex normals aren't needed unless you need to incorporate the b
 while calculating the refracted UV coordinates and distances.
 Referrer back to [SSAO](ssao.md#vertex-normals) for details.
 
-![Normal maps versus no normal maps.](https://i.imgur.com/MZ2R8I6.gif)
+<p align="center">
+<img src="https://i.imgur.com/MZ2R8I6.gif" alt="Normal maps versus no normal maps." title="Normal maps versus no normal maps.">
+</p>
 
 Here you see the water refracting the light with and without normal maps.
 If available, be sure to use the normal mapped normals instead of the vertex normals.
@@ -56,7 +60,9 @@ You can see this being done in [normal.frag](../demonstration/shaders/fragment/n
 
 ### Position Transformations
 
-![Position Transformations](https://i.imgur.com/bXtXDyu.gif)
+<p align="center">
+<img src="https://i.imgur.com/bXtXDyu.gif" alt="Position Transformations" title="Position Transformations">
+</p>
 
 Just like
 [SSAO](ssao.md) and [screen space reflection](screen-space-reflection.md),
@@ -99,7 +105,9 @@ To accommodate this, you'll need both the vertex positions of the scene
 with the refracting surfaces taken out and the vertex positions of the scene
 with the refracting surfaces left in.
 
-![Without and with refractive surfaces.](https://i.imgur.com/FjQtjsm.gif)
+<p align="center">
+<img src="https://i.imgur.com/FjQtjsm.gif" alt="Without and with refractive surfaces." title="Without and with refractive surfaces.">
+</p>
 
 `positionFromTexture` are the scene's vertex positions with the refracting surfaces left in.
 `positionToTexture` are the scene's vertex positions with the refracting surfaces taken out.
@@ -131,7 +139,9 @@ This is completely unrealistic (light does not travel faster through water than 
 but the realistic setting produced too many artifacts.
 In the end, the distortion only has to be believable—not realistic.
 
-![Adjusting the relative index of refraction.](https://i.imgur.com/dDOnobK.gif)
+<p align="center">
+<img src="https://i.imgur.com/dDOnobK.gif" alt="Adjusting the relative index of refraction." title="Adjusting the relative index of refraction.">
+</p>
 
 `rior` values above one tend to elongate the refraction while
 numbers below one tend to shrink the refraction.
@@ -144,7 +154,9 @@ When this happened during reflection, the fragment was left blank.
 This indicated no reflection or not enough information to determine a reflection.
 Leaving the fragment blank was fine for reflection since the reflective surface would fill in the gaps.
 
-![Refraction Holes](https://i.imgur.com/vcQDAYU.gif)
+<p align="center">
+<img src="https://i.imgur.com/vcQDAYU.gif" alt="Refraction Holes" title="Refraction Holes">
+</p>
 
 For refraction, however, we must set the fragment to some UV.
 If the fragment is left blank,
@@ -168,7 +180,9 @@ This will leave the UV coordinate unchanged,
 allowing the background to show through instead
 of there being a hole in the refractive surface.
 
-![Refraction UV Map](https://i.imgur.com/9fybLUO.png)
+<p align="center">
+<img src="https://i.imgur.com/9fybLUO.png" alt="Refraction UV Map" title="Refraction UV Map">
+</p>
 
 Here you see the refracted UV texture for the mill scene.
 The wheel and waterway disturb what is otherwise a smooth gradient.
@@ -209,7 +223,9 @@ the refracted ray would hit the refractive surface instead of what is behind it.
 
 ### Refraction Mask
 
-![Material Specular](https://i.imgur.com/iuFYVWB.gif)
+<p align="center">
+<img src="https://i.imgur.com/iuFYVWB.gif" alt="Material Specular" title="Material Specular">
+</p>
 
 You'll need a mask to filter out the non-refractive parts of the scene.
 This mask will determine which fragment does and does not receive a refracted color.
@@ -223,14 +239,18 @@ Refer back to [screen space reflection](screen-space-reflection.md#specular-map)
 
 ## Background Colors
 
-![Background Colors](https://i.imgur.com/AmT9RrU.gif)
+<p align="center">
+<img src="https://i.imgur.com/AmT9RrU.gif" alt="Background Colors" title="Background Colors">
+</p>
 
 You'll need to render the parts of the scene behind the refractive objects.
 This can be done by hiding the refractive objects and then rendering the scene to a framebuffer texture.
 
 ### Foreground Colors
 
-![Foreground Colors](https://i.imgur.com/6RPHULr.gif)
+<p align="center">
+<img src="https://i.imgur.com/6RPHULr.gif" alt="Foreground Colors" title="Foreground Colors">
+</p>
 
 ```c
 // ...
@@ -275,7 +295,7 @@ At distance zero, the foreground will be the background color.
   vec4 uv              = texture(uvTexture,              texCoord);
   vec4 mask            = texture(maskTexture,            texCoord);
   vec4 positionFrom    = texture(positionFromTexture,    texCoord);
-  vec4 positionTo      = texture(positionToTexture,      texCoord);
+  vec4 positionTo      = texture(positionToTexture,      uv.xy);
   vec4 backgroundColor = texture(backgroundColorTexture, uv.xy);
 
   if (refractionMask.r <= 0) { fragColor = vec4(0); return; }
@@ -304,7 +324,9 @@ If the refraction mask is turned off for this fragment, return nothing.
   // ...
 ```
 
-![Refraction Depth](https://i.imgur.com/IEFKerB.gif)
+<p align="center">
+<img src="https://i.imgur.com/IEFKerB.gif" alt="Refraction Depth" title="Refraction Depth">
+</p>
 
 Calculate the depth or distance between the foreground position and the background position.
 At zero depth, the foreground color will be the shallow color.

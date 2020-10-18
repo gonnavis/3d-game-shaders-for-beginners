@@ -15,39 +15,51 @@ Typically, when the output of some shader looks wrong, it's because of some coor
 
 ### Model
 
-![Model Space](https://i.imgur.com/8xptajU.gif)
+<p align="center">
+<img src="https://i.imgur.com/8xptajU.gif" alt="Model Space" title="Model Space">
+</p>
 
 The model or object coordinate system is relative to the origin of the model.
 This is typically set to the center of the model's geometry in a modeling program like Blender.
 
 ### World
 
-![World Space](https://i.imgur.com/fHl4ohX.gif)
+<p align="center">
+<img src="https://i.imgur.com/fHl4ohX.gif" alt="World Space" title="World Space">
+</p>
 
 The world space is relative to the origin of the scene/level/universe that you've created.
 
 ### View
 
-![View Space](https://i.imgur.com/3b4SGGH.gif)
+<p align="center">
+<img src="https://i.imgur.com/3b4SGGH.gif" alt="View Space" title="View Space">
+</p>
 
 The view or eye coordinate space is relative to the position of the active camera.
 
 ### Clip
 
-![Clip Space](https://i.imgur.com/iSEWS9Y.png)
+<p align="center">
+<img src="https://i.imgur.com/iSEWS9Y.png" alt="Clip Space" title="Clip Space">
+</p>
 
 The clip space is relative to the center of the camera's film.
 All coordinates are now homogeneous, ranging from negative one to one `(-1, 1)`.
 X and y are parallel with the camera's film and the z coordinate is the depth.
 
-![Frustum](https://i.imgur.com/MhgmOLv.gif)
+<p align="center">
+<img src="https://i.imgur.com/MhgmOLv.gif" alt="Frustum" title="Frustum">
+</p>
 
 Any vertex not within the bounds of the camera's frustum or view volume is clipped or discarded.
 You can see this happening with the cube towards the back, clipped by the camera's far plane, and the cube off to the side.
 
 ### Screen
 
-![Screen Space](https://i.imgur.com/bHHrjOl.png)
+<p align="center">
+<img src="https://i.imgur.com/bHHrjOl.png" alt="Screen Space" title="Screen Space">
+</p>
 
 The screen space is (typically) relative to the lower left corner of the screen.
 X goes from zero to the screen width.

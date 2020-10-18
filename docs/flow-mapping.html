@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Flow Mapping | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Flow Mapping | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Flow Mapping | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,9 +97,15 @@
 <p><a href="foam.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="outlining.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="flow-mapping">Flow Mapping</h2>
-<p><img src="https://i.imgur.com/3WDO9xW.gif" alt="Flow Mapping" /></p>
+<p align="center">
+<img src="https://i.imgur.com/3WDO9xW.gif" alt="Flow Mapping" title="Flow Mapping">
+</p>
+
 <p>Flow mapping is useful when you need to animate some fluid material. Much like diffuse maps map UV coordinates to diffuse colors and normal maps map UV coordinates to normals, flow maps map UV coordinates to 2D translations or flows.</p>
-<p><img src="https://i.imgur.com/b9Vw94N.png" alt="Flow Map" /></p>
+<p align="center">
+<img src="https://i.imgur.com/b9Vw94N.png" alt="Flow Map" title="Flow Map">
+</p>
+
 <p>Here you see a flow map that maps UV coordinates to translations in the positive y-axis direction. Flow maps use the red and green channels to store translations in the x and y direction. The red channel is for the x-axis and the green channel is the y-axis. Both range from zero to one which translates to flows that range from <code>(-1, -1)</code> to <code>(1, 1)</code>. This flow map is all one color consisting of 0.5 red and 0.6 green.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a>[r, g, b] =</span>
 <span id="cb1-2"><a href="#cb1-2"></a>  [r * <span class="dv">2</span> - <span class="dv">1</span>, g * <span class="dv">2</span> - <span class="dv">1</span>, b * <span class="dv">2</span> - <span class="dv">1</span>] =</span>
@@ -124,7 +131,10 @@
 <span id="cb3-9"><a href="#cb3-9"></a>      (<span class="dv">0</span>, <span class="fl">0.2</span>)</span></code></pre></div>
 <p>The flow map above maps each UV coordinate to the flow <code>(0, 0.2)</code>. This indicates zero movement in the x direction and a movement of 0.2 in the y direction.</p>
 <p>The flows can be used to translate all sorts of things but they're typically used to offset the UV coordinates of a another texture.</p>
-<p><img src="https://i.imgur.com/N6TWBw8.gif" alt="Foam Mask" /></p>
+<p align="center">
+<img src="https://i.imgur.com/N6TWBw8.gif" alt="Foam Mask" title="Foam Mask">
+</p>
+
 <div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a>  <span class="co">// ...</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a></span>
 <span id="cb4-3"><a href="#cb4-3"></a>  vec2 flow = texture(flowTexture, diffuseCoord).xy;</span>

@@ -8,7 +8,9 @@
 
 ## Film Grain
 
-![Film Grain](https://i.imgur.com/ct7mTv5.gif)
+<p align="center">
+<img src="https://i.imgur.com/ct7mTv5.gif" alt="Film Grain" title="Film Grain">
+</p>
 
 Film grain (when applied in subtle doses, unlike here)
 can add a bit of realism you don't notice until it's removed.
@@ -85,7 +87,9 @@ The example code uses this to animate the film grain as `osg_FrameTime` will alw
 For static film grain, replace `osg_FrameTime` with a large number.
 You may have to try different numbers to avoid seeing any patterns.
 
-![Horizontal, vertical, and diagonal lines.](https://i.imgur.com/xqSIMCb.gif)
+<p align="center">
+<img src="https://i.imgur.com/xqSIMCb.gif" alt="Horizontal, vertical, and diagonal lines." title="Horizontal, vertical, and diagonal lines.">
+</p>
 
 ```c
         // ...
@@ -105,7 +109,9 @@ Similarly, if only y was used, there would be only horizontal lines.
 
 The reason the snippet multiplies one coordinate by some number is to break up the diagonal symmetry.
 
-![Rain](https://i.imgur.com/4UXllmS.gif)
+<p align="center">
+<img src="https://i.imgur.com/4UXllmS.gif" alt="Rain" title="Rain">
+</p>
 
 You can of course remove the coordinate multiplier for a somewhat decent looking rain effect.
 To animate the rain effect, multiply the output of `sin` by `osg_FrameTime`.
@@ -154,7 +160,9 @@ Take a look at the first sequence of numbers and then the second.
 Each sequence is deterministic but the second sequence has less of a pattern than the first.
 So while the output of `fract(10000 * sin(...))` is deterministic, it doesn't have much of a discernible pattern.
 
-![Increasing the pseudo randomness.](https://i.imgur.com/Mtt8BNg.gif)
+<p align="center">
+<img src="https://i.imgur.com/Mtt8BNg.gif" alt="Increasing the pseudo randomness." title="Increasing the pseudo randomness.">
+</p>
 
 Here you see the `sin` multiplier going from 1, to 10, to 100, and then to 1000.
 

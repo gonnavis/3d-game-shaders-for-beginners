@@ -2,13 +2,15 @@
 [:arrow_double_up:](../README.md)
 [:arrow_up_small:](#)
 [:arrow_down_small:](#copyright)
-[:arrow_forward:](screen-space-reflection.md)
+[:arrow_forward:](motion-blur.md)
 
 # 3D Game Shaders For Beginners
 
 ## Screen Space Ambient Occlusion (SSAO)
 
-![SSAO](https://i.imgur.com/e95e9Q9.gif)
+<p align="center">
+<img src="https://i.imgur.com/o7lCukD.gif" alt="SSAO" title="SSAO">
+</p>
 
 SSAO is one of those effects you never knew you needed and can't live without once you have it.
 It can take a scene from mediocre to wow!
@@ -33,7 +35,9 @@ The SSAO shader will need the following inputs.
 
 ### Vertex Positions
 
-![Panda3D Vertex Positions](https://i.imgur.com/gr7IxKv.png)
+<p align="center">
+<img src="https://i.imgur.com/gr7IxKv.png" alt="Panda3D Vertex Positions" title="Panda3D Vertex Positions">
+</p>
 
 Storing the vertex positions into a framebuffer texture is not a necessity.
 You can recreate them from the [camera's depth buffer](http://theorangeduck.com/page/pure-depth-ssao).
@@ -139,7 +143,9 @@ If the color buffer is floating-point, no clamping occurs.
 </footer>
 </blockquote>
 
-![OpenGL Vertex Positions](https://i.imgur.com/V4nETME.png)
+<p align="center">
+<img src="https://i.imgur.com/V4nETME.png" alt="OpenGL Vertex Positions" title="OpenGL Vertex Positions">
+</p>
 
 Here you see the vertex positions with y being the up vector.
 
@@ -149,7 +155,9 @@ was configured with `gl-coordinate-system default`.
 
 ### Vertex Normals
 
-![Panda3d Vertex Normals](https://i.imgur.com/ilnbkzq.gif)
+<p align="center">
+<img src="https://i.imgur.com/ilnbkzq.gif" alt="Panda3d Vertex Normals" title="Panda3d Vertex Normals">
+</p>
 
 You'll need the vertex normals to correctly orient the samples you'll take in the SSAO shader.
 The example code generates multiple sample vectors distributed in a hemisphere
@@ -170,7 +178,9 @@ void main() {
 Like the position shader, the normal shader is simple as well.
 Be sure to normalize the vertex normal and remember that they are in view space.
 
-![OpenGL Vertex Normals](https://i.imgur.com/ucdx9Kp.gif)
+<p align="center">
+<img src="https://i.imgur.com/ucdx9Kp.gif" alt="OpenGL Vertex Normals" title="OpenGL Vertex Normals">
+</p>
 
 Here you see the vertex normals with y being the up vector.
 
@@ -178,7 +188,9 @@ Recall that Panda3D sets z as the up vector but OpenGL uses y as the up vector.
 The normal shader outputs the vertex positions with z being up since Panda3D
 was configured with `gl-coordinate-system default`.
 
-![SSAO using the normal maps.](https://i.imgur.com/fiHXBex.gif)
+<p align="center">
+<img src="https://i.imgur.com/fiHXBex.gif" alt="SSAO using the normal maps." title="SSAO using the normal maps.">
+</p>
 
 Here you see SSAO being used with the normal maps instead of the vertex normals.
 This adds an extra level of detail and will pair nicely with the normal mapped lighting.
@@ -282,7 +294,9 @@ These noise vectors will randomly tilt the hemisphere around the current fragmen
 
 ### Ambient Occlusion
 
-![SSAO Texture](https://i.imgur.com/KKt74VE.gif)
+<p align="center">
+<img src="https://i.imgur.com/KKt74VE.gif" alt="SSAO Texture" title="SSAO Texture">
+</p>
 
 SSAO works by sampling the view space around a fragment.
 The more samples that are below a surface, the darker the fragment color.
@@ -291,9 +305,11 @@ Each sample is used to look up a position in the position framebuffer texture.
 The position returned is compared to the sample.
 If the sample is farther away from the camera than the position, the sample counts towards the fragment being occluded.
 
-![SSAO Sampling](https://i.imgur.com/Nm4CJDN.gif)
+<p align="center">
+<img src="https://i.imgur.com/Nm4CJDN.gif" alt="SSAO Sampling" title="SSAO Sampling">
+</p>
 
-Here you see see the space above the surface being sampled for occlusion.
+Here you see the space above the surface being sampled for occlusion.
 
 ```c
   // ...
@@ -361,8 +377,8 @@ With the matrix in hand, the shader can now loop through the samples, subtractin
 ```c
     // ...
 
-    vec3 sample = tbn * samples[i];
-         sample = position.xyz + sample * radius;
+    vec3 samplePosition = tbn * samples[i];
+         samplePosition = position.xyz + samplePosition * radius;
 
     // ...
 ```
@@ -372,10 +388,10 @@ Using the matrix, position the sample near the vertex/fragment position and scal
 ```c
     // ...
 
-    vec4 offset      = vec4(sample, 1.0);
-         offset      = lensProjection * offset;
-         offset.xyz /= offset.w;
-         offset.xy   = offset.xy * 0.5 + 0.5;
+    vec4 offsetUV      = vec4(samplePosition, 1.0);
+         offsetUV      = lensProjection * offsetUV;
+         offsetUV.xyz /= offsetUV.w;
+         offsetUV.xy   = offsetUV.xy * 0.5 + 0.5;
 
     // ...
 ```
@@ -393,10 +409,10 @@ To transform clip space coordinates to UV coordinates, multiply by one half and 
 ```c
     // ...
 
-    vec4 offsetPosition = texture(positionTexture, offset.xy);
+    vec4 offsetPosition = texture(positionTexture, offsetUV.xy);
 
     float occluded = 0;
-    if (sample.y + bias <= offsetPosition.y) { occluded = 0; } else { occluded = 1; }
+    if (samplePosition.y + bias <= offsetPosition.y) { occluded = 0; } else { occluded = 1; }
 
     // ...
 ```
@@ -458,7 +474,9 @@ the example code sets the alpha channel to alpha channel of the position framebu
 
 ### Blurring
 
-![SSAO Blur Texture](https://i.imgur.com/QsqOhFR.gif)
+<p align="center">
+<img src="https://i.imgur.com/QsqOhFR.gif" alt="SSAO Blur Texture" title="SSAO Blur Texture">
+</p>
 
 The SSAO framebuffer texture is noisy as is.
 You'll want to blur it to remove the noise.
@@ -505,4 +523,4 @@ SSAO framebuffer texture and then included in the ambient light calculation.
 [:arrow_double_up:](../README.md)
 [:arrow_up_small:](#)
 [:arrow_down_small:](#copyright)
-[:arrow_forward:](screen-space-reflection.md)
+[:arrow_forward:](motion-blur.md)

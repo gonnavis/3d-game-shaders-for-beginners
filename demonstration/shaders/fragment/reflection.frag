@@ -7,7 +7,7 @@
 
 uniform sampler2D colorTexture;
 uniform sampler2D colorBlurTexture;
-uniform sampler2D specularTexture;
+uniform sampler2D maskTexture;
 
 out vec4 fragColor;
 
@@ -15,15 +15,15 @@ void main() {
   vec2 texSize  = textureSize(colorTexture, 0).xy;
   vec2 texCoord = gl_FragCoord.xy / texSize;
 
-  vec4 specular  = texture(specularTexture,  texCoord);
+  vec4 mask      = texture(maskTexture,      texCoord);
   vec4 color     = texture(colorTexture,     texCoord);
   vec4 colorBlur = texture(colorBlurTexture, texCoord);
 
-  float specularAmount = dot(specular.rgb, vec3(1.0 / 3.0));
+  float amount = clamp(mask.r, 0.0, 1.0);
 
-  if (specularAmount <= 0.0) { fragColor = vec4(0.0); return; }
+  if (amount <= 0.0) { fragColor = vec4(0.0); return; }
 
-  float roughness = 1.0 - min(specular.a, 1.0);
+  float roughness = clamp(mask.g, 0.0, 1.0);
 
-  fragColor = mix(color, colorBlur, roughness) * specularAmount;
+  fragColor = mix(color, colorBlur, roughness) * amount;
 }

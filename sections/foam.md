@@ -8,13 +8,17 @@
 
 ## Foam
 
-![Foam](https://i.imgur.com/SVLPYKn.gif)
+<p align="center">
+<img src="https://i.imgur.com/SVLPYKn.gif" alt="Foam" title="Foam">
+</p>
 
 Foam is typically used when simulating some body of water.
 Anywhere the water's flow is disrupted, you add some foam.
 The foam isn't much by itself but it can really connect the water with the rest of the scene.
 
-![Lava River](https://i.imgur.com/HCqvd8c.gif)
+<p align="center">
+<img src="https://i.imgur.com/HCqvd8c.gif" alt="Lava River" title="Lava River">
+</p>
 
 But don't stop at just water.
 You can use the same technique to make a river of lava for example.
@@ -31,7 +35,9 @@ on how to acquire the vertex positions in view space.
 
 ### Mask
 
-![Foam Mask](https://i.imgur.com/N6TWBw8.gif)
+<p align="center">
+<img src="https://i.imgur.com/N6TWBw8.gif" alt="Foam Mask" title="Foam Mask">
+</p>
 
 You'll need to texture your scene with a foam mask.
 The demo masks everything off except the water.
@@ -131,7 +137,9 @@ Since the positions are in view (camera) space, we only need the y value since i
 
 The amount of foam is based on the depth, the foam depth parameter, and the mask value.
 
-![Easing equation.](https://i.imgur.com/CDIPmin.png)
+<p align="center">
+<img src="https://i.imgur.com/CDIPmin.png" alt="Easing equation." title="Easing equation.">
+</p>
 
 ```c
         // ...

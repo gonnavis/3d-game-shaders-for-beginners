@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Film Grain | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Film Grain | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Film Grain | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,7 +97,10 @@
 <p><a href="dilation.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="lookup-table.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="film-grain">Film Grain</h2>
-<p><img src="https://i.imgur.com/ct7mTv5.gif" alt="Film Grain" /></p>
+<p align="center">
+<img src="https://i.imgur.com/ct7mTv5.gif" alt="Film Grain" title="Film Grain">
+</p>
+
 <p>Film grain (when applied in subtle doses, unlike here) can add a bit of realism you don't notice until it's removed. Typically, it's the imperfections that make a digitally generated image more believable. In terms of the shader graph, film grain is usually the last effect applied before the game is put on screen.</p>
 <h3 id="amount">Amount</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a>  <span class="co">// ...</span></span>
@@ -144,7 +148,10 @@
 <span id="cb4-7"><a href="#cb4-7"></a></span>
 <span id="cb4-8"><a href="#cb4-8"></a>              <span class="co">// ...</span></span></code></pre></div>
 <p>For static film grain, replace <code>osg_FrameTime</code> with a large number. You may have to try different numbers to avoid seeing any patterns.</p>
-<p><img src="https://i.imgur.com/xqSIMCb.gif" alt="Horizontal, vertical, and diagonal lines." /></p>
+<p align="center">
+<img src="https://i.imgur.com/xqSIMCb.gif" alt="Horizontal, vertical, and diagonal lines." title="Horizontal, vertical, and diagonal lines.">
+</p>
+
 <div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a>        <span class="co">// ...</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a>        * sin</span>
@@ -156,7 +163,10 @@
 <span id="cb5-9"><a href="#cb5-9"></a>              <span class="co">// ...</span></span></code></pre></div>
 <p>Both the x and y coordinate are used to create points or specs of film grain. If only x was used, there would only be vertical lines. Similarly, if only y was used, there would be only horizontal lines.</p>
 <p>The reason the snippet multiplies one coordinate by some number is to break up the diagonal symmetry.</p>
-<p><img src="https://i.imgur.com/4UXllmS.gif" alt="Rain" /></p>
+<p align="center">
+<img src="https://i.imgur.com/4UXllmS.gif" alt="Rain" title="Rain">
+</p>
+
 <p>You can of course remove the coordinate multiplier for a somewhat decent looking rain effect. To animate the rain effect, multiply the output of <code>sin</code> by <code>osg_FrameTime</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a>              <span class="co">// ...</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a></span>
@@ -181,7 +191,10 @@
 <span id="cb9-4"><a href="#cb9-4"></a><span class="op">&gt;&gt;&gt;</span> [floor(fract(<span class="dv">10000</span> <span class="op">*</span> sin(x <span class="op">*</span> toRadians)) <span class="op">*</span> <span class="dv">10</span>) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">10</span>)]</span>
 <span id="cb9-5"><a href="#cb9-5"></a>[<span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">7</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">5</span>]</span></code></pre></div>
 <p>Take a look at the first sequence of numbers and then the second. Each sequence is deterministic but the second sequence has less of a pattern than the first. So while the output of <code>fract(10000 * sin(...))</code> is deterministic, it doesn't have much of a discernible pattern.</p>
-<p><img src="https://i.imgur.com/Mtt8BNg.gif" alt="Increasing the pseudo randomness." /></p>
+<p align="center">
+<img src="https://i.imgur.com/Mtt8BNg.gif" alt="Increasing the pseudo randomness." title="Increasing the pseudo randomness.">
+</p>
+
 <p>Here you see the <code>sin</code> multiplier going from 1, to 10, to 100, and then to 1000.</p>
 <p>As you increase the <code>sin</code> output multiplier, you get less and less of a pattern. This is the reason the snippet multiplies <code>sin</code> by 10,000.</p>
 <h3 id="fragment-color">Fragment Color</h3>

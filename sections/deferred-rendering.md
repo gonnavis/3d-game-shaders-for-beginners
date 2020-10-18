@@ -8,7 +8,9 @@
 
 ## Deferred Rendering
 
-![Deferred vs Forward](https://i.imgur.com/rxTYLGv.png)
+<p align="center">
+<img src="https://i.imgur.com/rxTYLGv.png" alt="Deferred vs Forward" title="Deferred vs Forward">
+</p>
 
 Deferred rendering (deferred shading) is a screen space lighting technique.
 Instead of calculating the lighting for a scene while you traverse its
@@ -18,7 +20,9 @@ This can give you a performance boost depending on the complexity of your scene.
 
 ### Phases
 
-![G-buffer](https://i.imgur.com/uTimQJj.gif)
+<p align="center">
+<img src="https://i.imgur.com/uTimQJj.gif" alt="G-buffer" title="G-buffer">
+</p>
 
 Deferred rendering is performed in two phases.
 The first phase involves going through the scene's geometry and rendering its
@@ -30,7 +34,9 @@ With the exception of some transformations,
 this is mostly a read-only phase so its performance cost is minimal.
 After this phase, you're only dealing with 2D textures in the shape of the screen.
 
-![Lighting Phase](https://i.imgur.com/frYp6to.gif)
+<p align="center">
+<img src="https://i.imgur.com/frYp6to.gif" alt="Lighting Phase" title="Lighting Phase">
+</p>
 
 The second and last phase is where you perform your lighting calculations using the output of the first phase.
 This is when you calculate the ambient, diffuse, and specular colors.

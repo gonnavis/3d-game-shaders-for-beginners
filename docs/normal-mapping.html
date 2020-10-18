@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Normal Mapping | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Normal Mapping | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Normal Mapping | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,11 +97,20 @@
 <p><a href="cel-shading.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="deferred-rendering.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="normal-mapping">Normal Mapping</h2>
-<p><img src="https://i.imgur.com/M4eHo9I.gif" alt="Normal Mapping" /></p>
+<p align="center">
+<img src="https://i.imgur.com/M4eHo9I.gif" alt="Normal Mapping" title="Normal Mapping">
+</p>
+
 <p>Normal mapping allows you to add surface details without adding any geometry. Typically, in a modeling program like Blender, you create a high poly and a low poly version of your mesh. You take the vertex normals from the high poly mesh and bake them into a texture. This texture is the normal map. Then inside the fragment shader, you replace the low poly mesh's vertex normals with the high poly mesh's normals you baked into the normal map. Now when you light your mesh, it will appear to have more polygons than it really has. This will keep your FPS high while at the same time retain most of the details from the high poly version.</p>
-<p><img src="https://i.imgur.com/nSY9AW4.gif" alt="From high to low poly with normal mapping." /></p>
+<p align="center">
+<img src="https://i.imgur.com/nSY9AW4.gif" alt="From high to low poly with normal mapping." title="From high to low poly with normal mapping.">
+</p>
+
 <p>Here you see the progression from the high poly model to the low poly model to the low poly model with the normal map applied.</p>
-<p><img src="https://i.imgur.com/jvkRPE7.gif" alt="Normal Map Illusion" /></p>
+<p align="center">
+<img src="https://i.imgur.com/jvkRPE7.gif" alt="Normal Map Illusion" title="Normal Map Illusion">
+</p>
+
 <p>Keep in mind though, normal mapping is only an illusion. After a certain angle, the surface will look flat again.</p>
 <h3 id="vertex">Vertex</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">// ...</span></span>
@@ -148,13 +158,16 @@ It is used to transform the normal vector into view-space coordinates.
 <span id="cb2-11"><a href="#cb2-11"></a>  normalCoord   = p3d_MultiTexCoord0;</span>
 <span id="cb2-12"><a href="#cb2-12"></a></span>
 <span id="cb2-13"><a href="#cb2-13"></a>  <span class="co">// ...</span></span></code></pre></div>
-<p><img src="https://i.imgur.com/tLIA6Hu.gif" alt="Normal Maps" /></p>
+<p align="center">
+<img src="https://i.imgur.com/tLIA6Hu.gif" alt="Normal Maps" title="Normal Maps">
+</p>
+
 <p>You'll also need to output, to the fragment shader, the UV coordinates for the normal map.</p>
 <h3 id="fragment">Fragment</h3>
 <p>Recall that the vertex normal was used to calculate the lighting. However, the normal map provides us with different normals to use when calculating the lighting. In the fragment shader, you need to swap out the vertex normals for the normals found in the normal map.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">// ...</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a>uniform sampler2D p3d_Texture0;</span>
+<span id="cb3-3"><a href="#cb3-3"></a>uniform sampler2D p3d_Texture1;</span>
 <span id="cb3-4"><a href="#cb3-4"></a></span>
 <span id="cb3-5"><a href="#cb3-5"></a><span class="co">// ...</span></span>
 <span id="cb3-6"><a href="#cb3-6"></a></span>
@@ -163,7 +176,7 @@ It is used to transform the normal vector into view-space coordinates.
 <span id="cb3-9"><a href="#cb3-9"></a>  <span class="co">// ...</span></span>
 <span id="cb3-10"><a href="#cb3-10"></a></span>
 <span id="cb3-11"><a href="#cb3-11"></a>  <span class="co">/* Find */</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>  vec4 normalTex   = texture(p3d_Texture0, normalCoord);</span>
+<span id="cb3-12"><a href="#cb3-12"></a>  vec4 normalTex   = texture(p3d_Texture1, normalCoord);</span>
 <span id="cb3-13"><a href="#cb3-13"></a></span>
 <span id="cb3-14"><a href="#cb3-14"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>Using the normal map coordinates the vertex shader sent, pull out the normal from the normal map.</p>
@@ -205,7 +218,10 @@ It is used to transform the normal vector into view-space coordinates.
 <span id="cb6-13"><a href="#cb6-13"></a></span>
 <span id="cb6-14"><a href="#cb6-14"></a>    <span class="co">// ...</span></span></code></pre></div>
 <p>The normals you get back from the normal map are typically in tangent space. They could be in another space, however. For example, Blender allows you to bake the normals in tangent, object, world, or camera space.</p>
-<p><img src="https://i.imgur.com/EzHJPd4.gif" alt="Replacing the vertex normals with the normal map normals." /></p>
+<p align="center">
+<img src="https://i.imgur.com/EzHJPd4.gif" alt="Replacing the vertex normals with the normal map normals." title="Replacing the vertex normals with the normal map normals.">
+</p>
+
 <p>To take the normal map normal from tangent space to view pace, construct a three by three matrix using the tangent, binormal, and vertex normal vectors. Multiply the normal by this matrix and be sure to normalize it.</p>
 <p>At this point, you're done. The rest of the lighting calculations are the same.</p>
 <h3 id="source">Source</h3>

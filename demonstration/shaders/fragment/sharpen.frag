@@ -12,28 +12,29 @@ uniform vec2 enabled;
 out vec4 fragColor;
 
 void main() {
-  float amount = 0.2;
+  float amount = 0.3;
 
-  vec2 texSize  = textureSize(colorTexture, 0).xy;
-  vec2 texCoord = gl_FragCoord.xy / texSize;
+  vec2 texSize   = textureSize(colorTexture, 0).xy;
+  vec2 fragCoord = gl_FragCoord.xy;
+  vec2 texCoord  = fragCoord / texSize;
 
   if (enabled.x != 1) { fragColor = texture(colorTexture, texCoord); return; }
 
-  float neighbor = amount * -1;
-  float center   = amount *  4 + 1;
+  float neighbor = amount * -1.0;
+  float center   = amount *  4.0 + 1.0;
 
   vec3 color =
-        texture(colorTexture, vec2(gl_FragCoord.x + 0, gl_FragCoord.y + 1) / texSize).rgb
+        texture(colorTexture, (fragCoord + vec2( 0,  1)) / texSize).rgb
       * neighbor
 
-      + texture(colorTexture, vec2(gl_FragCoord.x - 1, gl_FragCoord.y + 0) / texSize).rgb
+      + texture(colorTexture, (fragCoord + vec2(-1,  0)) / texSize).rgb
       * neighbor
-      + texture(colorTexture, vec2(gl_FragCoord.x + 0, gl_FragCoord.y + 0) / texSize).rgb
+      + texture(colorTexture, (fragCoord + vec2( 0,  0)) / texSize).rgb
       * center
-      + texture(colorTexture, vec2(gl_FragCoord.x + 1, gl_FragCoord.y + 0) / texSize).rgb
+      + texture(colorTexture, (fragCoord + vec2( 1,  0)) / texSize).rgb
       * neighbor
 
-      + texture(colorTexture, vec2(gl_FragCoord.x + 0, gl_FragCoord.y - 1) / texSize).rgb
+      + texture(colorTexture, (fragCoord + vec2( 0, -1)) / texSize).rgb
       * neighbor
       ;
 

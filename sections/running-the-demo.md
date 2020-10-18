@@ -8,7 +8,9 @@
 
 ## Running The Demo
 
-![Running The Demo](https://i.imgur.com/y5XcReP.gif)
+<p align="center">
+<img src="https://i.imgur.com/y5XcReP.gif" alt="Running The Demo" title="Running The Demo">
+</p>
 
 After you've built the example code, you can now run the executable or demo.
 
@@ -55,9 +57,18 @@ click anywhere on the scene using the <kbd>Middle Mouse</kbd> button.
 - <kbd>⬆</kbd> to move up.
 - <kbd>⬇</kbd> to move down.
 
-<br>
+<p></p>
+
+- <kbd>1</kbd> to show midday.
+- <kbd>2</kbd> to show midnight.
+
+<p></p>
 
 - <kbd>Delete</kbd> to toggle the sound.
+- <kbd>3</kbd> to toggle fresnel.
+- <kbd>4</kbd> to toggle rim lighting.
+- <kbd>5</kbd> to toggle particles.
+- <kbd>6</kbd> to toggle motion blur.
 - <kbd>7</kbd> to toggle Kuwahara filtering.
 - <kbd>8</kbd> to toggle cel shading.
 - <kbd>9</kbd> to toggle lookup table processing.
@@ -77,28 +88,28 @@ click anywhere on the scene using the <kbd>Middle Mouse</kbd> button.
 - <kbd>.</kbd> to toggle flow mapping.
 - <kbd>/</kbd> to toggle the sun animation.
 
-<br>
+<p></p>
 
 - <kbd>r</kbd> to reset the scene.
 
-<br>
+<p></p>
 
-- <kbd>\[</kbd> to increase the fog near distance.
-- <kbd>Shift</kbd>+<kbd>\[</kbd> to decrease the fog near distance.
+- <kbd>\[</kbd> to decrease the fog near distance.
+- <kbd>Shift</kbd>+<kbd>\[</kbd> to increase the fog near distance.
 - <kbd>]</kbd> to increase the fog far distance.
 - <kbd>Shift</kbd>+<kbd>]</kbd> to decrease the fog far distance.
 
-<br>
+<p></p>
 
 - <kbd>Shift</kbd>+<kbd>-</kbd> to decrease the amount of foam.
 - <kbd>-</kbd> to increase the amount of foam.
 
-<br>
+<p></p>
 
 - <kbd>Shift</kbd>+<kbd>=</kbd> to decrease the relative index of refraction.
 - <kbd>=</kbd> to increase the relative index of refraction.
 
-<br>
+<p></p>
 
 - <kbd>Tab</kbd> to move forward through the framebuffer textures.
 - <kbd>Shift</kbd>+<kbd>Tab</kbd> to move backward through the framebuffer textures.

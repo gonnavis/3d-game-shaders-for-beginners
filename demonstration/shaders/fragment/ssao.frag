@@ -21,10 +21,10 @@ uniform vec2 enabled;
 out vec4 fragColor;
 
 void main() {
-  float radius    = 2;
-  float bias      = 0.01;
+  float radius    = 0.6;
+  float bias      = 0.005;
   float magnitude = 1.1;
-  float contrast  = 1.5;
+  float contrast  = 1.1;
 
   fragColor = vec4(1);
 
@@ -50,23 +50,25 @@ void main() {
   float occlusion = NUM_SAMPLES;
 
   for (int i = 0; i < NUM_SAMPLES; ++i) {
-    vec3 sample = tbn * samples[i];
-         sample = position.xyz + sample * radius;
+    vec3 samplePosition = tbn * samples[i];
+         samplePosition = position.xyz + samplePosition * radius;
 
-    vec4 offset      = vec4(sample, 1);
-         offset      = lensProjection * offset;
-         offset.xyz /= offset.w;
-         offset.xy   = offset.xy * 0.5 + 0.5;
+    vec4 offsetUV      = vec4(samplePosition, 1.0);
+         offsetUV      = lensProjection * offsetUV;
+         offsetUV.xyz /= offsetUV.w;
+         offsetUV.xy   = offsetUV.xy * 0.5 + 0.5;
 
     // Config.prc
     // gl-coordinate-system  default
     // textures-auto-power-2 1
     // textures-power-2      down
 
-    vec4 offsetPosition = texture(positionTexture, offset.xy);
+    vec4 offsetPosition = texture(positionTexture, offsetUV.xy);
 
     float occluded = 0;
-    if (sample.y + bias <= offsetPosition.y) { occluded = 0; } else { occluded = 1; }
+    if   (samplePosition.y + bias <= offsetPosition.y)
+         { occluded = 0; }
+    else { occluded = 1; }
 
     float intensity =
       smoothstep

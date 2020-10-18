@@ -15,7 +15,7 @@ uniform vec2 enabled;
 out vec4 fragColor;
 
 void main() {
-  float levels = 4;
+  float levels = 6.0;
 
   vec2 texSize  = textureSize(colorTexture, 0).xy;
   vec2 texCoord = gl_FragCoord.xy / texSize;

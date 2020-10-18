@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Screen Space Refraction | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Screen Space Refraction | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Screen Space Refraction | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,7 +97,10 @@
 <p><a href="screen-space-reflection.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="foam.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="screen-space-refraction-ssr">Screen Space Refraction (SSR)</h2>
-<p><img src="https://i.imgur.com/8Mdcn4y.gif" alt="Screen Space Refraction" /></p>
+<p align="center">
+<img src="https://i.imgur.com/8Mdcn4y.gif" alt="Screen Space Refraction" title="Screen Space Refraction">
+</p>
+
 <p>Screen space refraction, much like <a href="screen-space-reflection.html">screen space reflection</a>, adds a touch of realism you can't find anywhere else. Glass, plastic, water, and other transparent/translucent materials spring to life.</p>
 <p><a href="screen-space-reflection.html">Screen space reflection</a> and screen space refraction work almost identically expect for one major difference. Instead of using the reflected vector, screen space refraction uses the <a href="http://asawicki.info/news_1301_reflect_and_refract_functions.html">refracted vector</a>. It's a slight change in code but a big difference visually.</p>
 <h3 id="vertex-positions">Vertex Positions</h3>
@@ -104,11 +108,17 @@
 <p>However, unlike SSAO, you'll need the scene's vertex positions with and without the refractive objects. Refractive surfaces are translucent, meaning you can see through them. Since you can see through them, you'll need the vertex positions behind the refractive surface. Having both the foreground and background vertex positions will allow you to calculate UV coordinates and depth.</p>
 <h3 id="vertex-normals">Vertex Normals</h3>
 <p>To compute the refractions, you'll need the scene's foreground vertex normals in view space. The background vertex normals aren't needed unless you need to incorporate the background surface detail while calculating the refracted UV coordinates and distances. Referrer back to <a href="ssao.html#vertex-normals">SSAO</a> for details.</p>
-<p><img src="https://i.imgur.com/MZ2R8I6.gif" alt="Normal maps versus no normal maps." /></p>
+<p align="center">
+<img src="https://i.imgur.com/MZ2R8I6.gif" alt="Normal maps versus no normal maps." title="Normal maps versus no normal maps.">
+</p>
+
 <p>Here you see the water refracting the light with and without normal maps. If available, be sure to use the normal mapped normals instead of the vertex normals. The smoother and flatter the surface, the harder it is to tell the light is being refracted. There will be some distortion but not enough to make it worthwhile.</p>
 <p>To use the normal maps instead, you'll need to transform the normal mapped normals from tangent space to view space just like you did in the <a href="normal-mapping.html#fragment">lighting</a> calculations. You can see this being done in <a href="https://github.com/lettier/3d-game-shaders-for-beginners/blob/master/demonstration/shaders/fragment/normal.frag" target="_blank" rel="noopener noreferrer">normal.frag</a>.</p>
 <h3 id="position-transformations">Position Transformations</h3>
-<p><img src="https://i.imgur.com/bXtXDyu.gif" alt="Position Transformations" /></p>
+<p align="center">
+<img src="https://i.imgur.com/bXtXDyu.gif" alt="Position Transformations" title="Position Transformations">
+</p>
+
 <p>Just like <a href="ssao.html">SSAO</a> and <a href="screen-space-reflection.html">screen space reflection</a>, screen space refraction goes back and forth between the screen and view space. You'll need the camera lens' projection matrix to transform points in view space to clip space. From clip space, you'll have to transform the points again to UV space. Once in UV space, you can sample a vertex/fragment position from the scene which will be the closest position in the scene to your sample. This is the <em>screen space</em> part in <em>screen space refraction</em> since the "screen" is a texture UV mapped over a screen shaped rectangle.</p>
 <h3 id="refracted-uv-coordinates">Refracted UV Coordinates</h3>
 <p>Recall that UV coordinates range from zero to one for both U and V. The screen is just a 2D texture UV mapped over a screen-sized rectangle. Knowing this, the example code doesn't actually need the final rendering of the scene to compute the refraction. It can instead calculate what UV coordinate each screen pixel will eventually use. These calculated UV coordinates can be saved to a framebuffer texture and used later when the scene has been rendered.</p>
@@ -121,7 +131,10 @@
 <span id="cb1-6"><a href="#cb1-6"></a></span>
 <span id="cb1-7"><a href="#cb1-7"></a><span class="co">// ...</span></span></code></pre></div>
 <p>Reflection only deals with what is in front of the reflective surface. Refraction, however, deals with what is behind the refractive surface. To accommodate this, you'll need both the vertex positions of the scene with the refracting surfaces taken out and the vertex positions of the scene with the refracting surfaces left in.</p>
-<p><img src="https://i.imgur.com/FjQtjsm.gif" alt="Without and with refractive surfaces." /></p>
+<p align="center">
+<img src="https://i.imgur.com/FjQtjsm.gif" alt="Without and with refractive surfaces." title="Without and with refractive surfaces.">
+</p>
+
 <p><code>positionFromTexture</code> are the scene's vertex positions with the refracting surfaces left in. <code>positionToTexture</code> are the scene's vertex positions with the refracting surfaces taken out. <code>normalFromTexture</code> are the scene's vertex normals with the refraction surfaces left in. There's no need for the vertex normals behind the refractive surfaces unless you want to incorporate the surface detail for the background geometry.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">// ...</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a></span>
@@ -130,10 +143,16 @@
 <span id="cb2-5"><a href="#cb2-5"></a><span class="co">// ...</span></span></code></pre></div>
 <p>Refraction has one more adjustable parameter than reflection. <code>rior</code> is the relative index of refraction or relative refractive index. It is the ratio of the refraction indexes of two mediums. So for example, going from water to air is <code>1 / 1.33 ≈ 0.75</code>. The numerator is the refractive index of the medium the light is leaving and the denominator is the refractive index of the medium the light is entering. An <code>rior</code> of one means the light passes right through without being refracted or bent. As <code>rior</code> grows, the refraction will become a <a href="https://en.wikipedia.org/wiki/Total_internal_reflection">reflection</a>.</p>
 <p>There's no requirement that <code>rior</code> must adhere to the real world. The demo uses <code>1.05</code>. This is completely unrealistic (light does not travel faster through water than air) but the realistic setting produced too many artifacts. In the end, the distortion only has to be believable—not realistic.</p>
-<p><img src="https://i.imgur.com/dDOnobK.gif" alt="Adjusting the relative index of refraction." /></p>
+<p align="center">
+<img src="https://i.imgur.com/dDOnobK.gif" alt="Adjusting the relative index of refraction." title="Adjusting the relative index of refraction.">
+</p>
+
 <p><code>rior</code> values above one tend to elongate the refraction while numbers below one tend to shrink the refraction.</p>
 <p>As it was with screen space reflection, the screen doesn't have the entire geometry of the scene. A refracted ray may march through the screen space and never hit a captured surface. Or it may hit a surface but it's the backside not captured by the camera. When this happened during reflection, the fragment was left blank. This indicated no reflection or not enough information to determine a reflection. Leaving the fragment blank was fine for reflection since the reflective surface would fill in the gaps.</p>
-<p><img src="https://i.imgur.com/vcQDAYU.gif" alt="Refraction Holes" /></p>
+<p align="center">
+<img src="https://i.imgur.com/vcQDAYU.gif" alt="Refraction Holes" title="Refraction Holes">
+</p>
+
 <p>For refraction, however, we must set the fragment to some UV. If the fragment is left blank, the refractive surface will contain holes that let the detail behind it come through. This would be okay for a completely transparent surface but usually the refractive surface will have some tint to it, reflection, etc.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a>  <span class="co">// ...</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
@@ -144,7 +163,10 @@
 <span id="cb3-7"><a href="#cb3-7"></a></span>
 <span id="cb3-8"><a href="#cb3-8"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>The best choice is to select the UV as if the <code>rior</code> was one. This will leave the UV coordinate unchanged, allowing the background to show through instead of there being a hole in the refractive surface.</p>
-<p><img src="https://i.imgur.com/9fybLUO.png" alt="Refraction UV Map" /></p>
+<p align="center">
+<img src="https://i.imgur.com/9fybLUO.png" alt="Refraction UV Map" title="Refraction UV Map">
+</p>
+
 <p>Here you see the refracted UV texture for the mill scene. The wheel and waterway disturb what is otherwise a smooth gradient. The disruptions shift the UV coordinates from their screen position to their refracted screen position.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a>  <span class="co">// ...</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a></span>
@@ -163,14 +185,23 @@
 <span id="cb5-7"><a href="#cb5-7"></a>    <span class="co">// ...</span></span></code></pre></div>
 <p>The <code>positionTo</code>, sampled by the <code>uv</code> coordinates, uses the <code>positionToTexture</code>. For reflection, you only need one framebuffer texture containing the scene's interpolated vertex positions in view space. However, for refraction, <code>positionToTexture</code> contains the vertex positions of the scene minus the refractive surfaces since the refraction ray typically goes behind the surface. If <code>positionFromTexture</code> and <code>positionToTexture</code> were the same for refraction, the refracted ray would hit the refractive surface instead of what is behind it.</p>
 <h3 id="refraction-mask">Refraction Mask</h3>
-<p><img src="https://i.imgur.com/iuFYVWB.gif" alt="Material Specular" /></p>
+<p align="center">
+<img src="https://i.imgur.com/iuFYVWB.gif" alt="Material Specular" title="Material Specular">
+</p>
+
 <p>You'll need a mask to filter out the non-refractive parts of the scene. This mask will determine which fragment does and does not receive a refracted color. You could use this mask during the refracted UV calculation step or later when you actually sample the colors at the refracted UV coordinates.</p>
 <p>The mill scene uses the models' material specular as a mask. For the demo's purposes, the specular map is sufficient but you may want to use a more specialized map. Refer back to <a href="screen-space-reflection.html#specular-map">screen space reflection</a> for how to render the specular map.</p>
 <h2 id="background-colors">Background Colors</h2>
-<p><img src="https://i.imgur.com/AmT9RrU.gif" alt="Background Colors" /></p>
+<p align="center">
+<img src="https://i.imgur.com/AmT9RrU.gif" alt="Background Colors" title="Background Colors">
+</p>
+
 <p>You'll need to render the parts of the scene behind the refractive objects. This can be done by hiding the refractive objects and then rendering the scene to a framebuffer texture.</p>
 <h3 id="foreground-colors">Foreground Colors</h3>
-<p><img src="https://i.imgur.com/6RPHULr.gif" alt="Foreground Colors" /></p>
+<p align="center">
+<img src="https://i.imgur.com/6RPHULr.gif" alt="Foreground Colors" title="Foreground Colors">
+</p>
+
 <div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">// ...</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a></span>
 <span id="cb6-3"><a href="#cb6-3"></a>uniform sampler2D uvTexture;</span>
@@ -196,7 +227,7 @@
 <span id="cb8-6"><a href="#cb8-6"></a>  vec4 uv              = texture(uvTexture,              texCoord);</span>
 <span id="cb8-7"><a href="#cb8-7"></a>  vec4 mask            = texture(maskTexture,            texCoord);</span>
 <span id="cb8-8"><a href="#cb8-8"></a>  vec4 positionFrom    = texture(positionFromTexture,    texCoord);</span>
-<span id="cb8-9"><a href="#cb8-9"></a>  vec4 positionTo      = texture(positionToTexture,      texCoord);</span>
+<span id="cb8-9"><a href="#cb8-9"></a>  vec4 positionTo      = texture(positionToTexture,      uv.xy);</span>
 <span id="cb8-10"><a href="#cb8-10"></a>  vec4 backgroundColor = texture(backgroundColorTexture, uv.xy);</span>
 <span id="cb8-11"><a href="#cb8-11"></a></span>
 <span id="cb8-12"><a href="#cb8-12"></a>  <span class="cf">if</span> (refractionMask.r &lt;= <span class="dv">0</span>) { fragColor = vec4(<span class="dv">0</span>); <span class="cf">return</span>; }</span>
@@ -214,7 +245,10 @@
 <span id="cb9-8"><a href="#cb9-8"></a>  vec3 foregroundColor = mix(shallowColor, deepColor,     mixture);</span>
 <span id="cb9-9"><a href="#cb9-9"></a></span>
 <span id="cb9-10"><a href="#cb9-10"></a>  <span class="co">// ...</span></span></code></pre></div>
-<p><img src="https://i.imgur.com/IEFKerB.gif" alt="Refraction Depth" /></p>
+<p align="center">
+<img src="https://i.imgur.com/IEFKerB.gif" alt="Refraction Depth" title="Refraction Depth">
+</p>
+
 <p>Calculate the depth or distance between the foreground position and the background position. At zero depth, the foreground color will be the shallow color. At <code>depthMax</code>, the foreground color will be the deep color. The deep color is the background color tinted with <code>tintColor</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a>  <span class="co">// ...</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a></span>

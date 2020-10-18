@@ -12,17 +12,14 @@ uniform sampler2D outOfFocusTexture;
 
 uniform vec2 mouseFocusPoint;
 uniform vec2 nearFar;
-uniform vec2 outlineEnabled;
 uniform vec2 enabled;
 
 out vec4 fragColor;
+out vec4 fragColor1;
 
 void main() {
-  float minDistance = 1.0;
-  float maxDistance = 3.0;
-  float noiseScale  = 5.0;
-
-  noiseScale = outlineEnabled.x == 1 ? noiseScale : 0.0;
+  float minDistance =  8.0;
+  float maxDistance = 12.0;
 
   float far  = nearFar.y;
 
@@ -35,19 +32,9 @@ void main() {
 
   if (enabled.x != 1) { return; }
 
-  texSize  = textureSize(noiseTexture, 0).xy;
-  texCoord = gl_FragCoord.xy / texSize;
-
-  vec2 noise  = texture(noiseTexture, texCoord).rb;
-       noise  = noise * 2.0 - 1.0;
-       noise *= noiseScale;
-
-  texSize  = textureSize(focusTexture, 0).xy;
-  texCoord = (gl_FragCoord.xy - noise) / texSize;
-
   vec4 position = texture(positionTexture, texCoord);
-  if (outlineEnabled.x == 1 && position.a <= 0) { position.y = far; }
-  else if (position.a <= 0) { return; }
+
+  if (position.a <= 0) { fragColor1 = vec4(1.0); return; }
 
   vec4 outOfFocusColor = texture(outOfFocusTexture, texCoord);
   vec4 focusPoint      = texture(positionTexture,   mouseFocusPoint);
@@ -56,8 +43,9 @@ void main() {
     smoothstep
       ( minDistance
       , maxDistance
-      , abs(position.y - focusPoint.y)
+      , length(position - focusPoint)
       );
 
-  fragColor = mix(focusColor, outOfFocusColor, blur);
+  fragColor  = mix(focusColor, outOfFocusColor, blur);
+  fragColor1 = vec4(blur);
 }

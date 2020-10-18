@@ -8,7 +8,9 @@
 
 ## Normal Mapping
 
-![Normal Mapping](https://i.imgur.com/M4eHo9I.gif)
+<p align="center">
+<img src="https://i.imgur.com/M4eHo9I.gif" alt="Normal Mapping" title="Normal Mapping">
+</p>
 
 Normal mapping allows you to add surface details without adding any geometry.
 Typically, in a modeling program like Blender, you create a high poly and a low poly version of your mesh.
@@ -19,11 +21,15 @@ high poly mesh's normals you baked into the normal map.
 Now when you light your mesh, it will appear to have more polygons than it really has.
 This will keep your FPS high while at the same time retain most of the details from the high poly version.
 
-![From high to low poly with normal mapping.](https://i.imgur.com/nSY9AW4.gif)
+<p align="center">
+<img src="https://i.imgur.com/nSY9AW4.gif" alt="From high to low poly with normal mapping." title="From high to low poly with normal mapping.">
+</p>
 
 Here you see the progression from the high poly model to the low poly model to the low poly model with the normal map applied.
 
-![Normal Map Illusion](https://i.imgur.com/jvkRPE7.gif)
+<p align="center">
+<img src="https://i.imgur.com/jvkRPE7.gif" alt="Normal Map Illusion" title="Normal Map Illusion">
+</p>
 
 Keep in mind though, normal mapping is only an illusion.
 After a certain angle, the surface will look flat again.
@@ -86,7 +92,9 @@ out vec2 normalCoord;
   // ...
 ```
 
-![Normal Maps](https://i.imgur.com/tLIA6Hu.gif)
+<p align="center">
+<img src="https://i.imgur.com/tLIA6Hu.gif" alt="Normal Maps" title="Normal Maps">
+</p>
 
 You'll also need to output, to the fragment shader, the UV coordinates for the normal map.
 
@@ -99,7 +107,7 @@ In the fragment shader, you need to swap out the vertex normals for the normals 
 ```c
 // ...
 
-uniform sampler2D p3d_Texture0;
+uniform sampler2D p3d_Texture1;
 
 // ...
 
@@ -108,7 +116,7 @@ in vec2 normalCoord;
   // ...
 
   /* Find */
-  vec4 normalTex   = texture(p3d_Texture0, normalCoord);
+  vec4 normalTex   = texture(p3d_Texture1, normalCoord);
 
   // ...
 ```
@@ -168,7 +176,9 @@ The normals you get back from the normal map are typically in tangent space.
 They could be in another space, however.
 For example, Blender allows you to bake the normals in tangent, object, world, or camera space.
 
-![Replacing the vertex normals with the normal map normals.](https://i.imgur.com/EzHJPd4.gif)
+<p align="center">
+<img src="https://i.imgur.com/EzHJPd4.gif" alt="Replacing the vertex normals with the normal map normals." title="Replacing the vertex normals with the normal map normals.">
+</p>
 
 To take the normal map normal from tangent space to view pace,
 construct a three by three matrix using the tangent, binormal, and vertex normal vectors.

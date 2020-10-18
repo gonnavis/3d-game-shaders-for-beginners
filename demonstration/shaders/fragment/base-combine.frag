@@ -24,8 +24,8 @@ void main() {
   vec4 specular   = texture(specularTexture,   texCoord);
 
   fragColor      = base;
-  fragColor.rgb  = mix(fragColor.rgb, refraction.rgb, min(refraction.a, 1));
-  fragColor.rgb  = mix(fragColor.rgb, reflection.rgb, min(reflection.a, 1));
-  fragColor.rgb  = mix(fragColor.rgb, foam.rgb,       min(foam.a,       1));
-  fragColor.rgb += specular.rgb * min(specular.a, 1);
+  fragColor.rgb  = mix(fragColor.rgb, refraction.rgb, clamp(refraction.a, 0.0, 1.0));
+  fragColor.rgb  = mix(fragColor.rgb, reflection.rgb, clamp(reflection.a, 0.0, 1.0));
+  fragColor.rgb  = mix(fragColor.rgb, foam.rgb,       clamp(foam.a,       0.0, 1.0));
+  fragColor.rgb += (specular.rgb * clamp(specular.a, 0.0, 1.0));
 }

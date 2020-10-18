@@ -1,4 +1,4 @@
-[:arrow_backward:](ssao.md)
+[:arrow_backward:](motion-blur.md)
 [:arrow_double_up:](../README.md)
 [:arrow_up_small:](#)
 [:arrow_down_small:](#copyright)
@@ -8,7 +8,9 @@
 
 ## Screen Space Reflection (SSR)
 
-![Screen Space Reflections](https://i.imgur.com/AYG4tvg.gif)
+<p align="center">
+<img src="https://i.imgur.com/AYG4tvg.gif" alt="Screen Space Reflections" title="Screen Space Reflections">
+</p>
 
 Adding reflections can really ground your scene.
 Wet and shiny objects spring to life as nothing makes
@@ -62,7 +64,9 @@ With each call, you get back an answer of whether or not you hit something.
 If you do hit something,
 you try points around that area hoping to find the exact point of intersection.
 
-![SSR Ray Marching](https://i.imgur.com/wnAC7NI.gif)
+<p align="center">
+<img src="https://i.imgur.com/wnAC7NI.gif" alt="SSR Ray Marching" title="SSR Ray Marching">
+</p>
 
 Here you see ray marching being used to calculate each fragment's reflected point.
 The vertex normal is the bright green arrow,
@@ -79,7 +83,9 @@ Referrer back to [SSAO](ssao.md#vertex-positions) for details.
 To compute the reflections, you'll need the vertex normals in view space.
 Referrer back to [SSAO](ssao.md#vertex-normals) for details.
 
-![SSR using normal maps.](https://i.imgur.com/1cE2vBY.gif)
+<p align="center">
+<img src="https://i.imgur.com/1cE2vBY.gif" alt="SSR using normal maps." title="SSR using normal maps.">
+</p>
 
 Here you see SSR using the normal mapped normals instead of the vertex normals.
 Notice how the reflection follows the ripples in the water versus the more mirror
@@ -92,7 +98,9 @@ You can see this being done in [normal.frag](../demonstration/shaders/fragment/n
 
 ### Position Transformations
 
-![Position Transformations](https://i.imgur.com/Qnsvkc0.gif)
+<p align="center">
+<img src="https://i.imgur.com/Qnsvkc0.gif" alt="Position Transformations" title="Position Transformations">
+</p>
 
 Just like
 [SSAO](ssao.md),
@@ -119,7 +127,9 @@ It can instead calculate what UV coordinate each screen pixel will eventually us
 These calculated UV coordinates can be saved to a framebuffer texture
 and used later when the scene has been rendered.
 
-![Reflected UVs](https://i.imgur.com/pkQcGkD.gif)
+<p align="center">
+<img src="https://i.imgur.com/pkQcGkD.gif" alt="Reflected UVs" title="Reflected UVs">
+</p>
 
 Here you see the reflected UV coordinates.
 Without even rendering the scene yet,
@@ -174,11 +184,15 @@ This would be the exact point where the light ray bounced off, hit your current 
 Unfortunately the calculations are not always that precise so `thickness` provides some wiggle room or tolerance.
 You'll want the thickness to be as small as possible—just a short distance beyond a sampled position or depth.
 
-![Larger Thickness](https://i.imgur.com/W163Mfw.png)
+<p align="center">
+<img src="https://i.imgur.com/W163Mfw.png" alt="Larger Thickness" title="Larger Thickness">
+</p>
 
 You'll find that as the thickness gets larger, the reflections tend to smear in places.
 
-![Smaller Thickness](https://i.imgur.com/T6uH4Yu.png)
+<p align="center">
+<img src="https://i.imgur.com/T6uH4Yu.png" alt="Smaller Thickness" title="Smaller Thickness">
+</p>
 
 Going in the other direction, as the thickness gets smaller,
 the reflections become noisy with tiny little holes and narrow gaps.
@@ -243,7 +257,9 @@ Now that you know where the ray starts and ends on the screen, you can travel or
 Think of the ray as a line drawn on the screen.
 You'll travel along this line using it to sample the fragment positions stored in the position framebuffer texture.
 
-![Screen space versus view space.](https://i.imgur.com/MpBR225.png)
+<p align="center">
+<img src="https://i.imgur.com/MpBR225.png" alt="Screen space versus view space." title="Screen space versus view space.">
+</p>
 
 Note that you could march the ray through view space
 but this may under or over sample scene positions found in the position framebuffer texture.
@@ -278,7 +294,9 @@ Convert the fragment position to a UV coordinate by dividing the fragment's coor
 Calculate the delta or difference between the X and Y coordinates of the end and start fragments.
 This will be how many pixels the ray line occupies in the X and Y dimension of the screen.
 
-![The reflection ray in screen space.](https://i.imgur.com/Um4dzgL.png)
+<p align="center">
+<img src="https://i.imgur.com/Um4dzgL.png" alt="The reflection ray in screen space." title="The reflection ray in screen space.">
+</p>
 
 ```c
   // ...
@@ -406,7 +424,9 @@ The first pass runs while `i` is less than the `delta` value.
 When `i` reaches `delta`, the algorithm has traveled the entire length of the line.
 Remember that `delta` is the larger of the two X and Y deltas.
 
-![Screen Space Transformations](https://i.imgur.com/Qnsvkc0.gif)
+<p align="center">
+<img src="https://i.imgur.com/Qnsvkc0.gif" alt="Screen Space Transformations" title="Screen Space Transformations">
+</p>
 
 ```c
     // ...
@@ -599,7 +619,9 @@ If the reflected scene position's alpha or `w` component is zero,
 the `visibility` is zero.
 Note that if `w` is zero, there was no scene position at that point.
 
-![Reflection ray pointing towards the camera position.](https://i.imgur.com/7e2cOdZ.gif)
+<p align="center">
+<img src="https://i.imgur.com/7e2cOdZ.gif" alt="Reflection ray pointing towards the camera position." title="Reflection ray pointing towards the camera position.">
+</p>
 
 ```c
   // ...
@@ -665,7 +687,9 @@ Fade out the reflection the further it is from the intersection point you did fi
 Fade out the reflection based on how far way the reflected point is from the initial starting point.
 This will fade out the reflection instead of it ending abruptly as it reaches `maxDistance`.
 
-![Reflection ray exiting the frustum.](https://i.imgur.com/i0btBna.gif)
+<p align="center">
+<img src="https://i.imgur.com/i0btBna.gif" alt="Reflection ray exiting the frustum." title="Reflection ray exiting the frustum.">
+</p>
 
 
 ```c
@@ -700,7 +724,9 @@ The final fragment color is the reflected UV coordinates and the visibility.
 
 ### Specular Map
 
-![Specular Map](https://i.imgur.com/iuFYVWB.gif)
+<p align="center">
+<img src="https://i.imgur.com/iuFYVWB.gif" alt="Specular Map" title="Specular Map">
+</p>
 
 In addition to the reflected UV coordinates, you'll also need a specular map.
 The example code creates one using the fragment's material specular properties.
@@ -745,14 +771,18 @@ and nothing else.
 
 ### Scene Colors
 
-![Scene Colors](https://i.imgur.com/diBSxPI.png)
+<p align="center">
+<img src="https://i.imgur.com/diBSxPI.png" alt="Scene Colors" title="Scene Colors">
+</p>
 
 You'll need to render the parts of the scene you wish to reflect and store this in a framebuffer texture.
 This is typically just the scene without any reflections.
 
 ### Reflected Scene Colors
 
-![Reflected Scene Colors](https://i.imgur.com/UPvgfDU.gif)
+<p align="center">
+<img src="https://i.imgur.com/UPvgfDU.gif" alt="Reflected Scene Colors" title="Reflected Scene Colors">
+</p>
 
 Here you see the reflected colors saved to a framebuffer texture.
 
@@ -806,7 +836,9 @@ The visibility was computed during the reflected UV coordinates step.
 
 ### Blurred Reflected Scene Colors
 
-![Blurred Reflected Scene Colors](https://i.imgur.com/gVvx1Ei.png)
+<p align="center">
+<img src="https://i.imgur.com/gVvx1Ei.png" alt="Blurred Reflected Scene Colors" title="Blurred Reflected Scene Colors">
+</p>
 
 Now blur the reflected scene colors and store this in a framebuffer texture.
 The blurring is done using a box blur.
@@ -925,7 +957,7 @@ A low roughness will produce a clear reflection meaning the surface is smooth.
 <br>
 [lettier.com](https://www.lettier.com)
 
-[:arrow_backward:](ssao.md)
+[:arrow_backward:](motion-blur.md)
 [:arrow_double_up:](../README.md)
 [:arrow_up_small:](#)
 [:arrow_down_small:](#copyright)

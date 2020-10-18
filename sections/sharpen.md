@@ -8,7 +8,9 @@
 
 ## Sharpen
 
-![Sharpen](https://i.imgur.com/VFDKNvl.gif)
+<p align="center">
+<img src="https://i.imgur.com/VFDKNvl.gif" alt="Sharpen" title="Sharpen">
+</p>
 
 The sharpen effect increases the contrast at the edges of the image.
 This comes in handy when your graphics are bit too soft.

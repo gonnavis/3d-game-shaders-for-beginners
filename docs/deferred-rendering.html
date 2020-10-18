@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Deferred Rendering | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Deferred Rendering | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Deferred Rendering | 3D Game Shaders For Beginners</title>
     <style>
@@ -28,12 +29,21 @@
 <p><a href="normal-mapping.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="fog.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="deferred-rendering">Deferred Rendering</h2>
-<p><img src="https://i.imgur.com/rxTYLGv.png" alt="Deferred vs Forward" /></p>
+<p align="center">
+<img src="https://i.imgur.com/rxTYLGv.png" alt="Deferred vs Forward" title="Deferred vs Forward">
+</p>
+
 <p>Deferred rendering (deferred shading) is a screen space lighting technique. Instead of calculating the lighting for a scene while you traverse its geometry—you defer or wait to perform the lighting calculations until after the scene's geometry fragments have been culled or discarded. This can give you a performance boost depending on the complexity of your scene.</p>
 <h3 id="phases">Phases</h3>
-<p><img src="https://i.imgur.com/uTimQJj.gif" alt="G-buffer" /></p>
+<p align="center">
+<img src="https://i.imgur.com/uTimQJj.gif" alt="G-buffer" title="G-buffer">
+</p>
+
 <p>Deferred rendering is performed in two phases. The first phase involves going through the scene's geometry and rendering its positions or depths, normals, and materials into a framebuffer known as the geometry buffer or G-buffer. With the exception of some transformations, this is mostly a read-only phase so its performance cost is minimal. After this phase, you're only dealing with 2D textures in the shape of the screen.</p>
-<p><img src="https://i.imgur.com/frYp6to.gif" alt="Lighting Phase" /></p>
+<p align="center">
+<img src="https://i.imgur.com/frYp6to.gif" alt="Lighting Phase" title="Lighting Phase">
+</p>
+
 <p>The second and last phase is where you perform your lighting calculations using the output of the first phase. This is when you calculate the ambient, diffuse, and specular colors. Shadow and normal mapping are performed in this phase as well.</p>
 <h3 id="advantages">Advantages</h3>
 <p>The reason for using deferred rendering is to reduce the number of lighting calculations made. With forward rendering, the number of lighting calculations scales with the number of fragments and lights. However, with deferred shading, the number of lighting calculations scales with the number of pixels and lights. Recall that for a single pixel, there can be multiple fragments produced. As you add geometry, the number of lighting calculations per pixel increases when using forward but not when using deferred.</p>

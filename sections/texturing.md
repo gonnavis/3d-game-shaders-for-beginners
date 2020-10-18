@@ -8,13 +8,17 @@
 
 ## Texturing
 
-![Diffuse Texture Only](https://i.imgur.com/cqbgT8b.gif)
+<p align="center">
+<img src="https://i.imgur.com/cqbgT8b.gif" alt="Diffuse Texture Only" title="Diffuse Texture Only">
+</p>
 
 Texturing involves mapping some color or some other kind of vector to a fragment using UV coordinates.
 Both U and V range from zero to one.
 Each vertex gets a UV coordinate and this is outputted in the vertex shader.
 
-![UV Interpolation](https://i.imgur.com/JjAdNfk.png)
+<p align="center">
+<img src="https://i.imgur.com/JjAdNfk.png" alt="UV Interpolation" title="UV Interpolation">
+</p>
 
 The fragment shader receives the UV coordinate interpolated.
 Interpolated meaning the UV coordinate for the fragment is somewhere between the UV coordinates

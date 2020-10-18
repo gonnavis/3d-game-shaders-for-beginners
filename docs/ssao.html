@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="SSAO | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="SSAO | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>SSAO | 3D Game Shaders For Beginners</title>
     <style>
@@ -93,10 +94,13 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-<p><a href="bloom.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="screen-space-reflection.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
+<p><a href="bloom.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="motion-blur.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="screen-space-ambient-occlusion-ssao">Screen Space Ambient Occlusion (SSAO)</h2>
-<p><img src="https://i.imgur.com/e95e9Q9.gif" alt="SSAO" /></p>
+<p align="center">
+<img src="https://i.imgur.com/o7lCukD.gif" alt="SSAO" title="SSAO">
+</p>
+
 <p>SSAO is one of those effects you never knew you needed and can't live without once you have it. It can take a scene from mediocre to wow! For fairly static scenes, you can bake ambient occlusion into a texture but for more dynamic scenes, you'll need a shader. SSAO is one of the more fairly involved shading techniques, but once you pull it off, you'll feel like a shader master.</p>
 <p>By using only a handful of textures, SSAO can approximate the <a href="https://en.wikipedia.org/wiki/Ambient_occlusion">ambient occlusion</a> of a scene. This is faster than trying to compute the ambient occlusion by going through all of the scene's geometry. These handful of textures all originate in screen space giving screen space ambient occlusion its name.</p>
 <h3 id="inputs">Inputs</h3>
@@ -109,7 +113,10 @@
 <li>The camera lens' projection matrix.</li>
 </ul>
 <h3 id="vertex-positions">Vertex Positions</h3>
-<p><img src="https://i.imgur.com/gr7IxKv.png" alt="Panda3D Vertex Positions" /></p>
+<p align="center">
+<img src="https://i.imgur.com/gr7IxKv.png" alt="Panda3D Vertex Positions" title="Panda3D Vertex Positions">
+</p>
+
 <p>Storing the vertex positions into a framebuffer texture is not a necessity. You can recreate them from the <a href="http://theorangeduck.com/page/pure-depth-ssao">camera's depth buffer</a>. This being a beginners guide, I'll avoid this optimization and keep it straight forward. Feel free to use the depth buffer, however, for your implementation.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a>PT(Texture) depthTexture =</span>
 <span id="cb1-2"><a href="#cb1-2"></a>  <span class="kw">new</span> Texture(<span class="st">&quot;depthTexture&quot;</span>);</span>
@@ -187,11 +194,17 @@ If the color buffer is floating-point, no clamping occurs.
 </footer>
 </blockquote>
 
-<p><img src="https://i.imgur.com/V4nETME.png" alt="OpenGL Vertex Positions" /></p>
+<p align="center">
+<img src="https://i.imgur.com/V4nETME.png" alt="OpenGL Vertex Positions" title="OpenGL Vertex Positions">
+</p>
+
 <p>Here you see the vertex positions with y being the up vector.</p>
 <p>Recall that Panda3D sets z as the up vector but OpenGL uses y as the up vector. The position shader outputs the vertex positions with z being up since Panda3D was configured with <code>gl-coordinate-system default</code>.</p>
 <h3 id="vertex-normals">Vertex Normals</h3>
-<p><img src="https://i.imgur.com/ilnbkzq.gif" alt="Panda3d Vertex Normals" /></p>
+<p align="center">
+<img src="https://i.imgur.com/ilnbkzq.gif" alt="Panda3d Vertex Normals" title="Panda3d Vertex Normals">
+</p>
+
 <p>You'll need the vertex normals to correctly orient the samples you'll take in the SSAO shader. The example code generates multiple sample vectors distributed in a hemisphere but you could use a sphere and do away with the need for normals all together.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a>in vec3 vertexNormal;</span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
@@ -203,10 +216,16 @@ If the color buffer is floating-point, no clamping occurs.
 <span id="cb5-8"><a href="#cb5-8"></a>  fragColor = vec4(normal, <span class="dv">1</span>);</span>
 <span id="cb5-9"><a href="#cb5-9"></a>}</span></code></pre></div>
 <p>Like the position shader, the normal shader is simple as well. Be sure to normalize the vertex normal and remember that they are in view space.</p>
-<p><img src="https://i.imgur.com/ucdx9Kp.gif" alt="OpenGL Vertex Normals" /></p>
+<p align="center">
+<img src="https://i.imgur.com/ucdx9Kp.gif" alt="OpenGL Vertex Normals" title="OpenGL Vertex Normals">
+</p>
+
 <p>Here you see the vertex normals with y being the up vector.</p>
 <p>Recall that Panda3D sets z as the up vector but OpenGL uses y as the up vector. The normal shader outputs the vertex positions with z being up since Panda3D was configured with <code>gl-coordinate-system default</code>.</p>
-<p><img src="https://i.imgur.com/fiHXBex.gif" alt="SSAO using the normal maps." /></p>
+<p align="center">
+<img src="https://i.imgur.com/fiHXBex.gif" alt="SSAO using the normal maps." title="SSAO using the normal maps.">
+</p>
+
 <p>Here you see SSAO being used with the normal maps instead of the vertex normals. This adds an extra level of detail and will pair nicely with the normal mapped lighting.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a>    <span class="co">// ...</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a></span>
@@ -280,10 +299,16 @@ If the color buffer is floating-point, no clamping occurs.
 <span id="cb9-14"><a href="#cb9-14"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>To get a good sweep of the sampled area, you'll need to generate some noise vectors. These noise vectors will randomly tilt the hemisphere around the current fragment.</p>
 <h3 id="ambient-occlusion">Ambient Occlusion</h3>
-<p><img src="https://i.imgur.com/KKt74VE.gif" alt="SSAO Texture" /></p>
+<p align="center">
+<img src="https://i.imgur.com/KKt74VE.gif" alt="SSAO Texture" title="SSAO Texture">
+</p>
+
 <p>SSAO works by sampling the view space around a fragment. The more samples that are below a surface, the darker the fragment color. These samples are positioned at the fragment and pointed in the general direction of the vertex normal. Each sample is used to look up a position in the position framebuffer texture. The position returned is compared to the sample. If the sample is farther away from the camera than the position, the sample counts towards the fragment being occluded.</p>
-<p><img src="https://i.imgur.com/Nm4CJDN.gif" alt="SSAO Sampling" /></p>
-<p>Here you see see the space above the surface being sampled for occlusion.</p>
+<p align="center">
+<img src="https://i.imgur.com/Nm4CJDN.gif" alt="SSAO Sampling" title="SSAO Sampling">
+</p>
+
+<p>Here you see the space above the surface being sampled for occlusion.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a>  <span class="co">// ...</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a></span>
 <span id="cb10-3"><a href="#cb10-3"></a>  <span class="dt">float</span> radius    = <span class="dv">1</span>;</span>
@@ -324,17 +349,17 @@ If the color buffer is floating-point, no clamping occurs.
 <p>With the matrix in hand, the shader can now loop through the samples, subtracting how many are not occluded.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a>    <span class="co">// ...</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a></span>
-<span id="cb14-3"><a href="#cb14-3"></a>    vec3 sample = tbn * samples[i];</span>
-<span id="cb14-4"><a href="#cb14-4"></a>         sample = position.xyz + sample * radius;</span>
+<span id="cb14-3"><a href="#cb14-3"></a>    vec3 samplePosition = tbn * samples[i];</span>
+<span id="cb14-4"><a href="#cb14-4"></a>         samplePosition = position.xyz + samplePosition * radius;</span>
 <span id="cb14-5"><a href="#cb14-5"></a></span>
 <span id="cb14-6"><a href="#cb14-6"></a>    <span class="co">// ...</span></span></code></pre></div>
 <p>Using the matrix, position the sample near the vertex/fragment position and scale it by the radius.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a>    <span class="co">// ...</span></span>
 <span id="cb15-2"><a href="#cb15-2"></a></span>
-<span id="cb15-3"><a href="#cb15-3"></a>    vec4 offset      = vec4(sample, <span class="fl">1.0</span>);</span>
-<span id="cb15-4"><a href="#cb15-4"></a>         offset      = lensProjection * offset;</span>
-<span id="cb15-5"><a href="#cb15-5"></a>         offset.xyz /= offset.w;</span>
-<span id="cb15-6"><a href="#cb15-6"></a>         offset.xy   = offset.xy * <span class="fl">0.5</span> + <span class="fl">0.5</span>;</span>
+<span id="cb15-3"><a href="#cb15-3"></a>    vec4 offsetUV      = vec4(samplePosition, <span class="fl">1.0</span>);</span>
+<span id="cb15-4"><a href="#cb15-4"></a>         offsetUV      = lensProjection * offsetUV;</span>
+<span id="cb15-5"><a href="#cb15-5"></a>         offsetUV.xyz /= offsetUV.w;</span>
+<span id="cb15-6"><a href="#cb15-6"></a>         offsetUV.xy   = offsetUV.xy * <span class="fl">0.5</span> + <span class="fl">0.5</span>;</span>
 <span id="cb15-7"><a href="#cb15-7"></a></span>
 <span id="cb15-8"><a href="#cb15-8"></a>    <span class="co">// ...</span></span></code></pre></div>
 <p>Using the sample's position in view space, transform it from view space to clip space to UV space.</p>
@@ -343,10 +368,10 @@ If the color buffer is floating-point, no clamping occurs.
 <p>Recall that clip space components range from negative one to one and that UV coordinates range from zero to one. To transform clip space coordinates to UV coordinates, multiply by one half and add one half.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1"></a>    <span class="co">// ...</span></span>
 <span id="cb17-2"><a href="#cb17-2"></a></span>
-<span id="cb17-3"><a href="#cb17-3"></a>    vec4 offsetPosition = texture(positionTexture, offset.xy);</span>
+<span id="cb17-3"><a href="#cb17-3"></a>    vec4 offsetPosition = texture(positionTexture, offsetUV.xy);</span>
 <span id="cb17-4"><a href="#cb17-4"></a></span>
 <span id="cb17-5"><a href="#cb17-5"></a>    <span class="dt">float</span> occluded = <span class="dv">0</span>;</span>
-<span id="cb17-6"><a href="#cb17-6"></a>    <span class="cf">if</span> (sample.y + bias &lt;= offsetPosition.y) { occluded = <span class="dv">0</span>; } <span class="cf">else</span> { occluded = <span class="dv">1</span>; }</span>
+<span id="cb17-6"><a href="#cb17-6"></a>    <span class="cf">if</span> (samplePosition.y + bias &lt;= offsetPosition.y) { occluded = <span class="dv">0</span>; } <span class="cf">else</span> { occluded = <span class="dv">1</span>; }</span>
 <span id="cb17-7"><a href="#cb17-7"></a></span>
 <span id="cb17-8"><a href="#cb17-8"></a>    <span class="co">// ...</span></span></code></pre></div>
 <p>Using the offset UV coordinates, created by projecting the 3D sample onto the 2D position texture, find the corresponding position vector. This takes you from view space to clip space to UV space back to view space. The shader takes this round trip to find out if some geometry is behind, at, or in front of this sample. If the sample is in front of or at some geometry, this sample doesn't count towards the fragment being occluded. If the sample is behind some geometry, this sample counts towards the fragment being occluded.</p>
@@ -382,7 +407,10 @@ If the color buffer is floating-point, no clamping occurs.
 <span id="cb20-5"><a href="#cb20-5"></a>    <span class="co">// ...</span></span></code></pre></div>
 <p>For the demo's purposes, the example code sets the alpha channel to alpha channel of the position framebuffer texture to avoid covering up the background.</p>
 <h3 id="blurring">Blurring</h3>
-<p><img src="https://i.imgur.com/QsqOhFR.gif" alt="SSAO Blur Texture" /></p>
+<p align="center">
+<img src="https://i.imgur.com/QsqOhFR.gif" alt="SSAO Blur Texture" title="SSAO Blur Texture">
+</p>
+
 <p>The SSAO framebuffer texture is noisy as is. You'll want to blur it to remove the noise. Refer back to the section on <a href="blur.html">blurring</a>. For the best results, use a median or Kuwahara filter to preserve the sharp edges.</p>
 <h3 id="ambient-color">Ambient Color</h3>
 <div class="sourceCode" id="cb21"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1"></a>  <span class="co">// ...</span></span>
@@ -409,6 +437,6 @@ If the color buffer is floating-point, no clamping occurs.
 </ul>
 <h2 id="copyright">Copyright</h2>
 <p>(C) 2019 David Lettier <br> <a href="https://www.lettier.com">lettier.com</a></p>
-<p><a href="bloom.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="screen-space-reflection.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
+<p><a href="bloom.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="motion-blur.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
   </body>
 </html>

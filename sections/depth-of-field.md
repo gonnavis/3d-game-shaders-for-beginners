@@ -8,7 +8,9 @@
 
 ## Depth Of Field
 
-![Depth Of Field](https://i.imgur.com/DEa77Bh.gif)
+<p align="center">
+<img src="https://i.imgur.com/DEa77Bh.gif" alt="Depth Of Field" title="Depth Of Field">
+</p>
 
 Like [SSAO](ssao.md), depth of field is an effect you can't live without once you've used it.
 Artistically, you can use it to draw your viewer's eye to a certain subject.
@@ -29,7 +31,9 @@ This will be one of the inputs to the depth of field shader.
 
 #### Bokeh
 
-![Bokeh](https://i.imgur.com/aQ9Ga8J.gif)
+<p align="center">
+<img src="https://i.imgur.com/aQ9Ga8J.gif" alt="Bokeh" title="Bokeh">
+</p>
 
 For a great bokeh effect, dilate the out of focus texture and use that as the out of focus input.
 See [dilation](dilation.md) for more details.
@@ -86,7 +90,9 @@ Choosing the focus point is up to you.
 The demo uses the scene position directly under the mouse when clicking the middle mouse button.
 However, it could be a constant distance from the camera or a static position.
 
-![smoothstep](https://i.imgur.com/idDZr62.png)
+<p align="center">
+<img src="https://i.imgur.com/idDZr62.png" alt="smoothstep" title="smoothstep">
+</p>
 
 ```c
   // ...

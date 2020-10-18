@@ -5,7 +5,7 @@
 
 #version 150
 
-uniform sampler2D p3d_Texture0;
+uniform sampler2D p3d_Texture1;
 
 uniform vec2 normalMapsEnabled;
 
@@ -23,7 +23,7 @@ out vec4 normalOut;
 void main() {
   vec4 normalTex =
     texture
-      ( p3d_Texture0
+      ( p3d_Texture1
       , normalCoord
       );
 

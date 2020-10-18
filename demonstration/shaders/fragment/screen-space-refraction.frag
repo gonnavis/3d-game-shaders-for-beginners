@@ -18,7 +18,7 @@ out vec4 fragColor;
 
 void main() {
   float maxDistance = 5;
-  float resolution  = 0.2;
+  float resolution  = 0.3;
   int   steps       = 5;
   float thickness   = 0.5;
 

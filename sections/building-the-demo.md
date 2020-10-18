@@ -8,7 +8,9 @@
 
 ## Building The Demo
 
-![Building The Demo](https://i.imgur.com/PQcDnIu.gif)
+<p align="center">
+<img src="https://i.imgur.com/PQcDnIu.gif" alt="Building The Demo" title="Building The Demo">
+</p>
 
 Before you can try out the demo program, you'll have to build the example code first.
 

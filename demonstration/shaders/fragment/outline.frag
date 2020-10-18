@@ -10,43 +10,50 @@ uniform vec2 gamma;
 uniform sampler2D positionTexture;
 uniform sampler2D colorTexture;
 uniform sampler2D noiseTexture;
+uniform sampler2D depthOfFieldTexture;
+uniform sampler2D fogTexture;
 
 uniform vec2 nearFar;
-uniform vec2 depthOfFieldEnabled;
 uniform vec2 enabled;
 
 out vec4 fragColor;
 
 void main() {
   float minSeparation = 1.0;
-  float maxSeparation = 2.0;
+  float maxSeparation = 1.0;
   float minDistance   = 1.5;
   float maxDistance   = 2.0;
-  float noiseScale    = 5.0;
+  float noiseScale    = 1.0;
   int   size          = 1;
-  vec3  colorModifier = vec3(0.324, 0.063, 0.099);
+  vec3  colorModifier = vec3(0.522, 0.431, 0.349);
 
-  colorModifier.rgb = pow(colorModifier.rgb, vec3(gamma.x));
+  colorModifier = pow(colorModifier, vec3(gamma.x));
 
   float near = nearFar.x;
   float far  = nearFar.y;
 
+  vec2 fragCoord = gl_FragCoord.xy;
+
+  vec2 texSize   = textureSize(colorTexture, 0).xy;
+  vec2 texCoord  = fragCoord / texSize;
+
+  vec4  color        = texture(colorTexture,        texCoord);
+  float depthOfField = texture(depthOfFieldTexture, texCoord).r;
+  float fog          = texture(fogTexture,          texCoord).a;
+
+  if (enabled.x != 1) { fragColor = color; return; }
+
   fragColor = vec4(0.0);
 
-  if (enabled.x != 1) { return; }
-
-  vec2 fragCoord = gl_FragCoord.xy;
-  vec2 texSize   = textureSize(noiseTexture, 0).xy;
-  vec2 texCoord  = fragCoord/ texSize;
-
-  vec2 noise  = texture(noiseTexture, texCoord).rb;
+  vec2 noise  = texture(noiseTexture, fragCoord / textureSize(noiseTexture, 0).xy).rb;
        noise  = noise * 2.0 - 1.0;
        noise *= noiseScale;
 
-  texSize  = textureSize(colorTexture, 0).xy;
   texCoord = (fragCoord - noise) / texSize;
 
-  vec4 position = texture(positionTexture, texCoord);
+  vec4 position     = texture(positionTexture, texCoord);
+  vec4 positionTemp = position;
+
   if (position.a <= 0.0) { position.y = far; }
 
   float depth =
@@ -60,33 +67,53 @@ void main() {
       );
 
   float separation = mix(maxSeparation, minSeparation, depth);
-
-  float mx = 0.0;
+  float count      = 1.0;
+  float mx         = 0.0;
 
   for (int i = -size; i <= size; ++i) {
     for (int j = -size; j <= size; ++j) {
       texCoord =
-          (vec2(i, j) * separation + fragCoord + noise)
+          (vec2(i, j) * separation + (fragCoord + noise))
         / texSize;
 
-      vec4 positionTemp =
+      positionTemp =
         texture
           ( positionTexture
           , texCoord
           );
+
       if (positionTemp.y <= 0.0) { positionTemp.y = far; }
-      if (depthOfFieldEnabled.x == 1 && positionTemp.y <= position.y) { continue; }
 
       mx = max(mx, abs(position.y - positionTemp.y));
+
+      depthOfField =
+        max
+          ( texture
+              ( depthOfFieldTexture
+              , texCoord
+              ).r
+          , depthOfField
+          );
+
+      fog +=
+        texture
+          ( fogTexture
+          , texCoord
+          ).a;
+
+      count += 1.0;
     }
   }
 
-  float diff = smoothstep(minDistance, maxDistance, mx);
+        depthOfField = 1.0 - clamp(depthOfField, 0.0, 1.0);
+        fog          = 1.0 - clamp(fog / count,  0.0, 1.0);
+  float diff         = smoothstep(minDistance, maxDistance, mx) * depthOfField * fog;
 
   texCoord = fragCoord / texSize;
 
-  vec3 lineColor = texture(colorTexture, texCoord).rgb * colorModifier;
+  vec3 lineColor  = texture(colorTexture, texCoord).rgb;
+       lineColor *= colorModifier;
 
-  fragColor.rgb = lineColor;
-  fragColor.a   = diff;
+  fragColor.rgb = mix(color.rgb, lineColor, clamp(diff, 0.0, 1.0));
+  fragColor.a   = 1.0;
 }

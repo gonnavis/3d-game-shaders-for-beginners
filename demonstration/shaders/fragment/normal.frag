@@ -7,7 +7,7 @@
 
 uniform float osg_FrameTime;
 
-uniform sampler2D p3d_Texture0;
+uniform sampler2D p3d_Texture1;
 uniform sampler2D flowTexture;
 
 uniform vec2 normalMapsEnabled;
@@ -29,7 +29,7 @@ void main() {
 
   vec4 normalTex =
     texture
-      ( p3d_Texture0
+      ( p3d_Texture1
       , vec2
           ( normalCoord.x + flowMapsEnabled.x * flow.x * osg_FrameTime
           , normalCoord.y + flowMapsEnabled.y * flow.y * osg_FrameTime

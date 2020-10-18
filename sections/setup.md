@@ -8,6 +8,10 @@
 
 ## Setup
 
+<p align="center">
+<img src="https://i.imgur.com/fYpIWNk.gif" alt="Setup" title="Setup">
+</p>
+
 Below is the setup used to develop and test the example code.
 
 ### Environment
@@ -22,15 +26,26 @@ The example code was developed and tested using the following environment.
 
 ### Materials
 
-Each [Blender](https://blender.org) material used to build `mill-scene.egg` has two textures.
-The first texture is the normal map and the second is the diffuse map.
-If an object uses its vertex normals, a "flat blue" normal map is used.
+Each [Blender](https://blender.org) material used to build `mill-scene.egg` has five textures
+in the following order.
+
+- Diffuse
+- Normal
+- Specular
+- Reflection
+- Refraction
+
 By having the same maps in the same positions for all models,
 the shaders can be generalized, reducing the need to duplicate code.
 
-![A flat normal map.](https://i.imgur.com/tFmKgoH.png)
+If an object uses its vertex normals, a "flat blue" normal map is used.
 
-Here is a flat normal map which only contains the `(red = 128, green = 128, blue = 255)` color.
+<p align="center">
+<img src="https://i.imgur.com/tFmKgoH.png" alt="A flat normal map." title="A flat normal map.">
+</p>
+
+Here is an example of a flat normal map.
+The only color it contains is flat blue `(red = 128, green = 128, blue = 255)`.
 This color represents a unit (length one) normal pointing in the positive z-axis `(0, 0, 1)`.
 
 ```c
@@ -50,8 +65,20 @@ This color represents a unit (length one) normal pointing in the positive z-axis
 Here you see the unit normal `(0, 0, 1)`
 converted to flat blue `(128, 128, 255)`
 and flat blue converted to the unit normal.
+You'll learn more about this in the [normal mapping](normal-mapping.md) technique.
 
-You'll learn more about this in the [Normal Mapping](normal-mapping.md) technique.
+<p align="center">
+<img src="https://i.imgur.com/R9FgZKx.png" alt="Specular Map" title="Specular Map">
+</p>
+
+Up above is one of the specular maps used.
+The red and blue channel work to control the amount of specular reflection seen based on the camera angle.
+The green channel controls the shininess factor.
+You'll learn more about this in the [lighting](lighting.md) and [fresnel factor](fresnel-factor.md) sections.
+
+The reflection and refraction textures mask off the objects that are either reflective, refractive, or both.
+For the reflection texture, the red channel controls the amount of reflection and the green channel controls how
+clear or blurry the reflection is.
 
 ### Panda3D
 

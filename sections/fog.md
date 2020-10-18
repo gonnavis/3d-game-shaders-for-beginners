@@ -8,7 +8,9 @@
 
 ## Fog
 
-![Fog](https://i.imgur.com/uNRxZl4.gif)
+<p align="center">
+<img src="https://i.imgur.com/uNRxZl4.gif" alt="Fog" title="Fog">
+</p>
 
 Fog (or mist as it's called in Blender) adds atmospheric haze to a scene,
 providing mystique and softening pop-ins (geometry suddenly entering into the camera's frustum).

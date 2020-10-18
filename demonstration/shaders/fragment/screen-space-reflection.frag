@@ -16,22 +16,22 @@ uniform vec2 enabled;
 out vec4 fragColor;
 
 void main() {
-  float maxDistance = 15;
-  float resolution  = 0.2;
+  float maxDistance = 8;
+  float resolution  = 0.3;
   int   steps       = 5;
   float thickness   = 0.5;
 
   vec2 texSize  = textureSize(positionTexture, 0).xy;
   vec2 texCoord = gl_FragCoord.xy / texSize;
 
-  vec4 uv = vec4(0);
+  vec4 uv = vec4(0.0);
 
   vec4 positionFrom = texture(positionTexture, texCoord);
   vec4 mask         = texture(maskTexture,     texCoord);
 
-  if ( positionFrom.w                  <= 0
-     || enabled.x                      != 1
-     || dot(mask.rgb, vec3(1.0 / 3.0)) <= 0.0
+  if (  positionFrom.w <= 0.0
+     || enabled.x      != 1.0
+     || mask.r         <= 0.0
      ) { fragColor = uv; return; }
 
   vec3 unitPositionFrom = normalize(positionFrom.xyz);
@@ -40,8 +40,8 @@ void main() {
 
   vec4 positionTo = positionFrom;
 
-  vec4 startView = vec4(positionFrom.xyz + (pivot *           0), 1);
-  vec4 endView   = vec4(positionFrom.xyz + (pivot * maxDistance), 1);
+  vec4 startView = vec4(positionFrom.xyz + (pivot *         0.0), 1.0);
+  vec4 endView   = vec4(positionFrom.xyz + (pivot * maxDistance), 1.0);
 
   vec4 startFrag      = startView;
        startFrag      = lensProjection * startFrag;
@@ -60,8 +60,8 @@ void main() {
 
   float deltaX    = endFrag.x - startFrag.x;
   float deltaY    = endFrag.y - startFrag.y;
-  float useX      = abs(deltaX) >= abs(deltaY) ? 1 : 0;
-  float delta     = mix(abs(deltaY), abs(deltaX), useX) * clamp(resolution, 0, 1);
+  float useX      = abs(deltaX) >= abs(deltaY) ? 1.0 : 0.0;
+  float delta     = mix(abs(deltaY), abs(deltaX), useX) * clamp(resolution, 0.0, 1.0);
   vec2  increment = vec2(deltaX, deltaY) / max(delta, 0.001);
 
   float search0 = 0;
@@ -87,7 +87,7 @@ void main() {
         , useX
         );
 
-    search1 = clamp(search1, 0, 1);
+    search1 = clamp(search1, 0.0, 1.0);
 
     viewDistance = (startView.y * endView.y) / mix(endView.y, startView.y, search1);
     depth        = viewDistance - positionTo.y;
@@ -100,7 +100,7 @@ void main() {
     }
   }
 
-  search1 = search0 + ((search1 - search0) / 2);
+  search1 = search0 + ((search1 - search0) / 2.0);
 
   steps *= hit0;
 

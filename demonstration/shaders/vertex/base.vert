@@ -7,10 +7,8 @@
 
 #define NUMBER_OF_LIGHTS 4
 
-uniform mat4 p3d_ModelMatrix;
-uniform mat4 p3d_ViewMatrix;
 uniform mat4 p3d_ModelViewMatrix;
-uniform mat4 p3d_ModelViewProjectionMatrix;
+uniform mat4 p3d_ProjectionMatrix;
 uniform mat3 p3d_NormalMatrix;
 
 uniform struct p3d_LightSourceParameters
@@ -51,7 +49,6 @@ in vec3 p3d_Binormal;
 in vec3 p3d_Tangent;
 
 out vec4 vertexPosition;
-
 out vec4 vertexColor;
 
 out vec3 vertexNormal;
@@ -64,8 +61,7 @@ out vec2 diffuseCoord;
 out vec4 vertexInShadowSpaces[NUMBER_OF_LIGHTS];
 
 void main() {
-  vertexColor = p3d_Color;
-
+  vertexColor    = p3d_Color;
   vertexPosition = p3d_ModelViewMatrix * p3d_Vertex;
 
   vertexNormal = normalize(p3d_NormalMatrix * p3d_Normal);
@@ -79,5 +75,5 @@ void main() {
     vertexInShadowSpaces[i] = p3d_LightSource[i].shadowViewMatrix * vertexPosition;
   }
 
-  gl_Position = p3d_ModelViewProjectionMatrix * p3d_Vertex;
+  gl_Position = p3d_ProjectionMatrix * vertexPosition;
 }

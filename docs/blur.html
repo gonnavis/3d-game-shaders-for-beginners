@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Blur | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Blur | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Blur | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,10 +97,16 @@
 <p><a href="fog.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="bloom.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="blur">Blur</h2>
-<p><img src="https://i.imgur.com/b5vw2AJ.gif" alt="Kuwahara Filter" /></p>
+<p align="center">
+<img src="https://i.imgur.com/b5vw2AJ.gif" alt="Kuwahara Filter" title="Kuwahara Filter">
+</p>
+
 <p>The need to blur this or that can come up quite often as you try to obtain a particular look or perform some technique like motion blur. Below are just some of ways you can blur your game's imagery.</p>
 <h3 id="box-blur">Box Blur</h3>
-<p><img src="https://i.imgur.com/uaXC1JM.gif" alt="Box Blur" /></p>
+<p align="center">
+<img src="https://i.imgur.com/uaXC1JM.gif" alt="Box Blur" title="Box Blur">
+</p>
+
 <p>The box blur or mean filter algorithm is a simple to implement blurring effect. It's fast and gets the job done. If you need more finesse, you can upgrade to a Gaussian blur.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a>  <span class="co">// ...</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -118,7 +125,10 @@
 <span id="cb2-5"><a href="#cb2-5"></a></span>
 <span id="cb2-6"><a href="#cb2-6"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>The <code>separation</code> parameter spreads out the blur without having to sample additional fragments. <code>separation</code> ranges from one to infinity.</p>
-<p><img src="https://i.imgur.com/bRw0OkX.png" alt="Blur Kernel" /></p>
+<p align="center">
+<img src="https://i.imgur.com/bRw0OkX.png" alt="Blur Kernel" title="Blur Kernel">
+</p>
+
 <div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a>  <span class="co">// ...</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a>  <span class="cf">for</span> (<span class="dt">int</span> i = -size; i &lt;= size; ++i) {</span>
@@ -149,10 +159,16 @@
 <span id="cb5-5"><a href="#cb5-5"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>To finish computing the mean, divide the sum of the colors sampled by the number of samples taken. The final fragment color is the mean or average of the fragments sampled inside the window.</p>
 <h3 id="median-filter">Median Filter</h3>
-<p><img src="https://i.imgur.com/T1nEEn3.gif" alt="Median Filter" /></p>
+<p align="center">
+<img src="https://i.imgur.com/T1nEEn3.gif" alt="Median Filter" title="Median Filter">
+</p>
+
 <p>The box blur uses the mean color of the samples taken. The median filter uses the median color of the samples taken. By using the median instead of the mean, the edges in the image are preserved—meaning the edges stay nice and crisp. For example, look at the windows in the box blurred image versus the median filtered image.</p>
 <p>Unfortunately, finding the median can be slower than finding the mean. You could sort the values and choose the middle one but that would take at least quasilinear time. There is a technique to find the median in linear time but it can be quite awkward inside a shader. The numerical approach below approximates the median in linear time. How well it approximates the median can be controlled.</p>
-<p><img src="https://i.imgur.com/AnbzUmN.png" alt="Painterly" /></p>
+<p align="center">
+<img src="https://i.imgur.com/AnbzUmN.png" alt="Painterly" title="Painterly">
+</p>
+
 <p>At lower quality approximations, you end up with a nice <a href="https://en.wikipedia.org/wiki/Painterliness">painterly</a> look.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">// ...</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a></span>
@@ -279,7 +295,10 @@
 <span id="cb17-12"><a href="#cb17-12"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>Now loop through the <code>binIndexes</code> and find the first color with the last <code>bins</code> indexed reached. Its greyscale value is the approximated median which in many cases will be the true median value. Set this color as the fragColor and exit the loop and shader.</p>
 <h3 id="kuwahara-filter">Kuwahara Filter</h3>
-<p><img src="https://i.imgur.com/b5vw2AJ.gif" alt="Kuwahara Filter" /></p>
+<p align="center">
+<img src="https://i.imgur.com/b5vw2AJ.gif" alt="Kuwahara Filter" title="Kuwahara Filter">
+</p>
+
 <p>Like the median filter, the kuwahara filter preserves the major edges found in the image. You'll notice that it has a more block like or chunky pattern to it. In practice, the Kuwahara filter runs faster than the median filter, allowing for larger <code>size</code> values without a noticeable slowdown.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">// ...</span></span>
 <span id="cb18-2"><a href="#cb18-2"></a></span>
@@ -388,7 +407,10 @@
 <span id="cb29-6"><a href="#cb29-6"></a></span>
 <span id="cb29-7"><a href="#cb29-7"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>Back in <code>main</code>, set the <code>size</code> parameter. If the size is at or below zero, return the fragment unchanged.</p>
-<p><img src="https://i.imgur.com/iuLbLKO.gif" alt="Kuwahara Kernal" /></p>
+<p align="center">
+<img src="https://i.imgur.com/iuLbLKO.gif" alt="Kuwahara Kernal" title="Kuwahara Kernal">
+</p>
+
 <div class="sourceCode" id="cb30"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb30-1"><a href="#cb30-1"></a>  <span class="co">// ...</span></span>
 <span id="cb30-2"><a href="#cb30-2"></a></span>
 <span id="cb30-3"><a href="#cb30-3"></a>  <span class="co">// Lower Left</span></span>

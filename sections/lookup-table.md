@@ -8,14 +8,18 @@
 
 ## Lookup Table (LUT)
 
-![LUT](https://i.imgur.com/WrPzVlW.gif)
+<p align="center">
+<img src="https://i.imgur.com/WrPzVlW.gif" alt="LUT" title="LUT">
+</p>
 
 The lookup table or LUT shader allows you to transform the colors of your game
 using an image editor like the [GIMP](https://www.gimp.org/).
 From color grading to turning day into night,
 the LUT shader is a handy tool for tweaking the look of your game.
 
-![Neutral LUT](https://i.imgur.com/NPdJNGj.png)
+<p align="center">
+<img src="https://i.imgur.com/NPdJNGj.png" alt="Neutral LUT" title="Neutral LUT">
+</p>
 
 Before you can get started,
 you'll need to find a neutral LUT image.
@@ -33,7 +37,9 @@ the amount of green increases as you move from top to bottom.
 The upper-left corner of the first block is black since every RGB channel is zero.
 The lower-right corner of the last block is white since every RGB channel is one.
 
-![LUT And Screenshot](https://i.imgur.com/KyxPm1r.png)
+<p align="center">
+<img src="https://i.imgur.com/KyxPm1r.png" alt="LUT And Screenshot" title="LUT And Screenshot">
+</p>
 
 With the neutral LUT in hand, take a screenshot of your game and open it in your image editor.
 Add the neutral LUT as a new layer and merge it with the screenshot.
@@ -75,7 +81,9 @@ The first mapping (shown up above) is to the nearest left or lower bound block l
 the second mapping (shown below) is to the nearest right or upper bound block mapping.
 At the end, you'll combine these two mappings to create the final color transformation.
 
-![RGB Channel Mapping](https://i.imgur.com/j2JmyQ2.png)
+<p align="center">
+<img src="https://i.imgur.com/j2JmyQ2.png" alt="RGB Channel Mapping" title="RGB Channel Mapping">
+</p>
 
 Each of the red, green, and blue channels maps to one of 16 possibilities in the LUT.
 The blue channel maps to one of the 16 upper-left block corners.
@@ -128,7 +136,9 @@ This is the nearest left block color.
 Now you'll need to calculate the UV coordinates for the nearest right block color.
 Notice how `ceil` or ceiling is being used now instead of `floor`.
 
-![Mixing](https://i.imgur.com/uciq7Um.png)
+<p align="center">
+<img src="https://i.imgur.com/uciq7Um.png" alt="Mixing" title="Mixing">
+</p>
 
 ```c
   // ...

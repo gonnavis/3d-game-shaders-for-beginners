@@ -10,7 +10,6 @@ uniform vec2 gamma;
 
 uniform sampler2D baseTexture;
 uniform sampler2D bloomTexture;
-uniform sampler2D outlineTexture;
 uniform sampler2D fogTexture;
 
 uniform vec4 backgroundColor0;
@@ -43,24 +42,24 @@ void main() {
           )
       );
 
+  float sunPosition = sin(sunPosition.x * pi.y);
+        sunPosition = max(0.2, -1 * sunPosition);
+
   vec4 backgroundColor =
     mix
       ( backgroundColor0
       , backgroundColor1
-      , clamp(1 - (random * 0.1 + texCoord.y), 0, 1)
+      , 1.0 - clamp(random * 0.1 + texCoord.y, 0.0, 1.0)
       );
 
-  float sunPosition    = max(0.2, -1 * sin(sunPosition.x * pi.y));
   backgroundColor.rgb *= sunPosition;
   backgroundColor.b    = mix(backgroundColor.b + 0.05, backgroundColor.b, sunPosition);
 
-  vec4 baseColor    = texture(baseTexture,    texCoord);
-  vec4 bloomColor   = texture(bloomTexture,   texCoord);
-  vec4 outlineColor = texture(outlineTexture, texCoord);
-  vec4 fogColor     = texture(fogTexture,     texCoord);
+  vec4 baseColor  = texture(baseTexture,  texCoord);
+  vec4 bloomColor = texture(bloomTexture, texCoord);
+  vec4 fogColor   = texture(fogTexture,   texCoord);
 
   fragColor     = baseColor;
-  fragColor.rgb = mix(fragColor.rgb, outlineColor.rgb, min(outlineColor.a, 1));
   fragColor     = fragColor + bloomColor;
   fragColor     = mix(fragColor, fogColor, min(fogColor.a, 1));
   fragColor     =
@@ -68,7 +67,7 @@ void main() {
       ( mix
           ( backgroundColor.rgb
           , fragColor.rgb
-          , min(baseColor.a + outlineColor.a + fogColor.a, 1)
+          , min(baseColor.a + fogColor.a, 1)
           )
       , 1
       );

@@ -25,12 +25,12 @@ vec3  valueRatios = vec3(0.3, 0.59, 0.11);
 
 float values[MAX_KERNEL_SIZE];
 
-vec4  color       = vec4(0);
-vec4  meanTemp    = vec4(0);
-vec4  mean        = vec4(0);
-float valueMean   = 0;
-float variance    = 0;
-float minVariance = -1;
+vec4  color       = vec4(0.0);
+vec4  meanTemp    = vec4(0.0);
+vec4  mean        = vec4(0.0);
+float valueMean   =  0.0;
+float variance    =  0.0;
+float minVariance = -1.0;
 
 void findMean(int i0, int i1, int j0, int j1) {
   meanTemp = vec4(0);

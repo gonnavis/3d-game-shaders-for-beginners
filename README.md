@@ -1,10 +1,6 @@
-<span>
 <p align="center">
-
-![3D Game Shaders For Beginners](https://i.imgur.com/X273NRL.gif)
-
+<img src="https://i.imgur.com/x8rtGr4.gif" alt="3D Game Shaders For Beginners" title="3D Game Shaders For Beginners">
 </p>
-</span>
 
 # 3D Game Shaders For Beginners
 
@@ -37,6 +33,9 @@ shading techniques with Panda3D and OpenGL specifically.
 - [Render To Texture](sections/render-to-texture.md)
 - [Texturing](sections/texturing.md)
 - [Lighting](sections/lighting.md)
+- [Blinn-Phong](sections/blinn-phong.md)
+- [Fresnel Factor](sections/fresnel-factor.md)
+- [Rim Lighting](sections/rim-lighting.md)
 - [Cel Shading](sections/cel-shading.md)
 - [Normal Mapping](sections/normal-mapping.md)
 - [Deferred Rendering](sections/deferred-rendering.md)
@@ -44,6 +43,7 @@ shading techniques with Panda3D and OpenGL specifically.
 - [Blur](sections/blur.md)
 - [Bloom](sections/bloom.md)
 - [SSAO](sections/ssao.md)
+- [Motion Blur](sections/motion-blur.md)
 - [Screen Space Reflection](sections/screen-space-reflection.md)
 - [Screen Space Refraction](sections/screen-space-refraction.md)
 - [Foam](sections/foam.md)

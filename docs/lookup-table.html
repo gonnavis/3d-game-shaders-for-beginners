@@ -6,11 +6,12 @@
     <meta name="description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
     <meta property="og:title" content="Lookup Table | 3D Game Shaders For Beginners" />
     <meta property="og:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta property="og:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta property="og:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:title" content="Lookup Table | 3D Game Shaders For Beginners" />
     <meta name="twitter:description" content="Interested in adding textures, lighting, shadows, normal maps, glowing objects, ambient occlusion, reflections, refractions, and more to your 3D game? Great! 3D Game Shaders For Beginners is a collection of shading techniques that will take your game visuals to new heights." />
-    <meta name="twitter:image" content="https://i.imgur.com/brdytrF.png" />
+    <meta name="twitter:image" content="https://i.imgur.com/JIDwVTm.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="author" content="David Lettier" />
     <title>Lookup Table | 3D Game Shaders For Beginners</title>
     <style>
@@ -96,12 +97,21 @@
 <p><a href="film-grain.html"><span class="emoji" data-emoji="arrow_backward">◀️</span></a> <a href="index.html"><span class="emoji" data-emoji="arrow_double_up">⏫</span></a> <a href="#"><span class="emoji" data-emoji="arrow_up_small">🔼</span></a> <a href="#copyright"><span class="emoji" data-emoji="arrow_down_small">🔽</span></a> <a href="gamma-correction.html"><span class="emoji" data-emoji="arrow_forward">▶️</span></a></p>
 <h1 id="3d-game-shaders-for-beginners">3D Game Shaders For Beginners</h1>
 <h2 id="lookup-table-lut">Lookup Table (LUT)</h2>
-<p><img src="https://i.imgur.com/WrPzVlW.gif" alt="LUT" /></p>
+<p align="center">
+<img src="https://i.imgur.com/WrPzVlW.gif" alt="LUT" title="LUT">
+</p>
+
 <p>The lookup table or LUT shader allows you to transform the colors of your game using an image editor like the <a href="https://www.gimp.org/">GIMP</a>. From color grading to turning day into night, the LUT shader is a handy tool for tweaking the look of your game.</p>
-<p><img src="https://i.imgur.com/NPdJNGj.png" alt="Neutral LUT" /></p>
+<p align="center">
+<img src="https://i.imgur.com/NPdJNGj.png" alt="Neutral LUT" title="Neutral LUT">
+</p>
+
 <p>Before you can get started, you'll need to find a neutral LUT image. Neutral meaning that it leaves the fragment colors unchanged. The LUT needs to be 256 pixels wide by 16 pixels tall and contain 16 blocks with each block being 16 by 16 pixels.</p>
 <p>The LUT is mapped out into 16 blocks. Each block has a different level of blue. As you move across the blocks, from left to right, the amount of blue increases. You can see the amount of blue in each block's upper-left corner. Within each block, the amount of red increases as you move from left to right and the amount of green increases as you move from top to bottom. The upper-left corner of the first block is black since every RGB channel is zero. The lower-right corner of the last block is white since every RGB channel is one.</p>
-<p><img src="https://i.imgur.com/KyxPm1r.png" alt="LUT And Screenshot" /></p>
+<p align="center">
+<img src="https://i.imgur.com/KyxPm1r.png" alt="LUT And Screenshot" title="LUT And Screenshot">
+</p>
+
 <p>With the neutral LUT in hand, take a screenshot of your game and open it in your image editor. Add the neutral LUT as a new layer and merge it with the screenshot. As you manipulate the colors of the screenshot, the LUT will be altered in the same way. When you're done editing, select only the LUT and save it as a new image. You now have your new lookup table and can begin writing your shader.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a>  <span class="co">// ...</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -123,7 +133,10 @@
 <span id="cb2-10"><a href="#cb2-10"></a></span>
 <span id="cb2-11"><a href="#cb2-11"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>In order to transform the current fragment's color, using the LUT, you'll need to map the color to two UV coordinates on the lookup table texture. The first mapping (shown up above) is to the nearest left or lower bound block location and the second mapping (shown below) is to the nearest right or upper bound block mapping. At the end, you'll combine these two mappings to create the final color transformation.</p>
-<p><img src="https://i.imgur.com/j2JmyQ2.png" alt="RGB Channel Mapping" /></p>
+<p align="center">
+<img src="https://i.imgur.com/j2JmyQ2.png" alt="RGB Channel Mapping" title="RGB Channel Mapping">
+</p>
+
 <p>Each of the red, green, and blue channels maps to one of 16 possibilities in the LUT. The blue channel maps to one of the 16 upper-left block corners. After the blue channel maps to a block, the red channel maps to one of the 16 horizontal pixel positions within the block and the green channel maps to one of the 16 vertical pixel positions within the block. These three mappings will determine the UV coordinate you'll need to sample a color from the LUT.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a>  <span class="co">// ...</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
@@ -152,7 +165,10 @@
 <span id="cb5-10"><a href="#cb5-10"></a></span>
 <span id="cb5-11"><a href="#cb5-11"></a>  <span class="co">// ...</span></span></code></pre></div>
 <p>Now you'll need to calculate the UV coordinates for the nearest right block color. Notice how <code>ceil</code> or ceiling is being used now instead of <code>floor</code>.</p>
-<p><img src="https://i.imgur.com/uciq7Um.png" alt="Mixing" /></p>
+<p align="center">
+<img src="https://i.imgur.com/uciq7Um.png" alt="Mixing" title="Mixing">
+</p>
+
 <div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a>  <span class="co">// ...</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a></span>
 <span id="cb6-3"><a href="#cb6-3"></a>  color.r = mix(left.r, right.r, fract(color.r * <span class="fl">15.0</span>));</span>

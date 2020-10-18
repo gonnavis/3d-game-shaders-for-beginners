@@ -8,7 +8,9 @@
 
 ## Gamma Correction
 
-![Gamma Correction](https://i.imgur.com/IG7A6cj.gif)
+<p align="center">
+<img src="https://i.imgur.com/IG7A6cj.gif" alt="Gamma Correction" title="Gamma Correction">
+</p>
 
 Correcting for gamma will make your color calculations look correct.
 This isn't to say they'll look amazing but with gamma correction,
@@ -32,7 +34,9 @@ gamma correction becomes a tedious yet simple chore you'll have to perform from 
 
 ### Color Spaces
 
-![sRGB vs RGB](https://i.imgur.com/a1U5oBq.png)
+<p align="center">
+<img src="https://i.imgur.com/a1U5oBq.png" alt="sRGB vs RGB" title="sRGB vs RGB">
+</p>
 
 The two color spaces you'll need to be aware of are sRGB (standard Red Green Blue) and RGB or linear color space.
 
@@ -84,12 +88,16 @@ By raising the color values to the power of `2.2`,
 you're converting them from sRGB to RGB or linear color space.
 This conversion has the effect of darkening the colors.
 
-![Color Darkening](https://i.imgur.com/E5nkRfG.png)
+<p align="center">
+<img src="https://i.imgur.com/E5nkRfG.png" alt="Color Darkening" title="Color Darkening">
+</p>
 
 For example,
 `vec3(0.9, 0.2, 0.3)` becomes `vec3(0.793, 0.028, 0.07)`.
 
-![Gamma Curves](https://i.imgur.com/TOEb0EC.gif)
+<p align="center">
+<img src="https://i.imgur.com/TOEb0EC.gif" alt="Gamma Curves" title="Gamma Curves">
+</p>
 
 The `2.2` value is known as gamma.
 Loosely speaking, gamma can either be `1.0 / 2.2`, `2.2`, or `1.0`.
@@ -100,7 +108,9 @@ any base raised to the power of `1.0` is itself.
 
 #### Non-color Data
 
-![Non-color Data](https://i.imgur.com/reA2qjs.png)
+<p align="center">
+<img src="https://i.imgur.com/reA2qjs.png" alt="Non-color Data" title="Non-color Data">
+</p>
 
 One important exception to decoding is when the "colors" of a texture represent non-color data.
 Some examples of non-color data would be the normals in a normal map,
@@ -113,7 +123,9 @@ treat the sRGB color values as RGB or linear and skip the decoding process.
 
 ### Encoding
 
-![Perceptually versus Actually Linear](https://i.imgur.com/tRxkKNe.gif)
+<p align="center">
+<img src="https://i.imgur.com/tRxkKNe.gif" alt="Perceptually versus Actually Linear" title="Perceptually versus Actually Linear">
+</p>
 
 The necessity for encoding and decoding stems from the fact that humans do not perceive lightness linearly and
 most displays (like a monitor) lack the precision or number of bits to accurately show both lighter and darker tonal values or shades.
@@ -138,7 +150,9 @@ raise the `rgb` values to the power of `1.0 / 2.2`.
 Notice how `1.1 / 2.2` is the reciprocal of `2.2` or `2.2 / 1.0`.
 Here you see the symmetry in decoding and encoding.
 
-![Not Gamma Corrected versus Gamma Corrected](https://i.imgur.com/4km0pdv.gif)
+<p align="center">
+<img src="https://i.imgur.com/4km0pdv.gif" alt="Not Gamma Corrected versus Gamma Corrected" title="Not Gamma Corrected versus Gamma Corrected">
+</p>
 
 ### Source
 

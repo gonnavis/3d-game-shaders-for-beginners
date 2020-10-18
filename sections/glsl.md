@@ -8,6 +8,10 @@
 
 ## GLSL
 
+<p align="center">
+<img src="https://i.imgur.com/7b5MCBG.gif" alt="" title="">
+</p>
+
 Instead of using the
 [fixed-function](https://en.wikipedia.org/wiki/Fixed-function)
 pipeline,
@@ -66,7 +70,9 @@ Take note of the `out` keyword.
 The `out` keyword means this global variable is being set by the shader.
 The name `fragColor` is arbitrary so feel free to choose a different one.
 
-![Output of the stripped down shaders.](https://i.imgur.com/V25UzMa.gif)
+<p align="center">
+<img src="https://i.imgur.com/V25UzMa.gif" alt="Output of the stripped down shaders." title="Output of the stripped down shaders.">
+</p>
 
 This is the output of the two shaders shown above.
 

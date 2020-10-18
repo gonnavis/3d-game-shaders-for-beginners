@@ -1,4 +1,4 @@
-[:arrow_backward:](lighting.md)
+[:arrow_backward:](rim-lighting.md)
 [:arrow_double_up:](../README.md)
 [:arrow_up_small:](#)
 [:arrow_down_small:](#copyright)
@@ -8,7 +8,9 @@
 
 ## Cel Shading
 
-![Cel Shaded](https://i.imgur.com/nihEIqe.gif)
+<p align="center">
+<img src="https://i.imgur.com/W80Ke1y.gif" alt="Cel Shaded" title="Cel Shaded">
+</p>
 
 Cel shading is a technique to make 3D objects look 2D or flat.
 In 2D,
@@ -31,11 +33,15 @@ When combined with [outlining](outlining.md), cel shading can really sell the 2D
 Revisiting the [lighting](lighting.md#diffuse) model,
 modify the `diffuseIntensity` such that it is either zero or one.
 
-![Step Function](https://i.imgur.com/lyLweFc.png)
+<p align="center">
+<img src="https://i.imgur.com/lyLweFc.png" alt="Step Function" title="Step Function">
+</p>
 
 The `step` function returns zero if the input is less than the edge and one otherwise.
 
-![Steps Function](https://i.imgur.com/EI6QJ60.png)
+<p align="center">
+<img src="https://i.imgur.com/EI6QJ60.png" alt="Steps Function" title="Steps Function">
+</p>
 
 ```c
   // ...
@@ -51,7 +57,9 @@ The `step` function returns zero if the input is less than the edge and one othe
 If you would like to have a few steps or transitions,
 you can perform something like the above.
 
-![Step Texture](https://i.imgur.com/7KK65mi.png)
+<p align="center">
+<img src="https://i.imgur.com/7KK65mi.png" alt="Step Texture" title="Step Texture">
+</p>
 
 ```c
   // ...
@@ -80,6 +88,8 @@ Using the `step` function again, set the `specularIntensity` to be either zero o
 You can also use one of the other approaches described up above for the specular highlight as well.
 After you've altered the `specularIntensity`, the rest of the lighting calculations are the same.
 
+## Fresnel
+
 ### Source
 
 - [main.cxx](../demonstration/src/main.cxx)
@@ -92,7 +102,7 @@ After you've altered the `specularIntensity`, the rest of the lighting calculati
 <br>
 [lettier.com](https://www.lettier.com)
 
-[:arrow_backward:](lighting.md)
+[:arrow_backward:](rim-lighting.md)
 [:arrow_double_up:](../README.md)
 [:arrow_up_small:](#)
 [:arrow_down_small:](#copyright)

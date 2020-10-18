@@ -25,6 +25,8 @@ void main() {
 
   fragColor.rgb = vec3(0);
 
+  float count = 0.0;
+
   for (int i = -size; i <= size; ++i) {
     for (int j = -size; j <= size; ++j) {
       fragColor.rgb +=
@@ -35,8 +37,10 @@ void main() {
               )
             / texSize
           ).rgb;
+
+      count += 1.0;
     }
   }
 
-  fragColor.rgb /= pow(size * 2 + 1, 2);
+  fragColor.rgb /= count;
 }
