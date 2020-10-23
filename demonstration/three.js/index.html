@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title></title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link type="text/css" rel="stylesheet" href="./lib/three.js/examples/main.css">
+</head>
+
+<body>
+	<div id="dom_tip"
+		style="width:100%;height:100%;position:fixed;left:0;top:0;pointer-events: none;display:flex;align-items: center;justify-content: center;color:white;user-select: none;text-align: center;">
+		drag to start
+	</div>
+
+	<script type="module">
+
+		import * as THREE from './lib/three.js/src/Three.js';
+		window.THREE = THREE
+
+		import { OrbitControls } from './lib/three.js/examples/jsm/controls/OrbitControls.js';
+		import { GLTFLoader } from './lib/three.js/examples/jsm/loaders/GLTFLoader.js';
+
+		var container, controls;
+		var camera, scene, renderer;
+		const frustumSize = 30
+		var meshs = []
+
+		var p3d_ProjectionMatrix = { value: new THREE.Matrix4() }
+		var p3d_ModelViewMatrix = { value: new THREE.Matrix4() }
+		var p3d_NormalMatrix = { value: new THREE.Matrix3() }
+
+		main()
+		async function main() {
+			await init();
+			// render();
+		}
+
+		async function init() {
+
+			window.vertexShader = await (await fetch('./shaders/vertex/base.vert')).text()
+			window.fragmentShader = await (await fetch('./shaders/fragment/base.frag')).text()
+			window.fragmentShaderSSR = await (await fetch('./shaders/fragment/screen-space-reflection.frag')).text()
+
+			const attachmentNums = 4;
+			window.renderTarget = new THREE.WebGLMultiRenderTarget(innerWidth, innerHeight, attachmentNums, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType });
+
+			container = document.createElement('div');
+			document.body.appendChild(container);
+
+			// camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 200);
+			// camera.position.set(-17.227134137254193, 19.371550123693538, 20.419816238700083);
+
+			const aspect = window.innerWidth / window.innerHeight;
+			camera = new THREE.OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, .001, 100);
+			camera.position.set(-20, 20, 20);
+
+			window.camera = camera
+
+			scene = new THREE.Scene();
+
+			var loader = new GLTFLoader().setPath('/lib/3d-game-shaders-for-beginners_github_gonnavis/demonstration/eggs/mill-scene/');
+			loader.load('all.glb', function (gltf) {
+				window.gltf = gltf
+
+				gltf.scene.traverse(function (child) {
+
+					if (child.isMesh && child.material && child.material.map) {
+						meshs.push(child)
+						// console.log(child.material.map)
+						let origin_mtl = child.material
+						addGeoAttributes(child.geometry)
+						child.material = createMtl({
+							map: origin_mtl.map,
+							isWater: child.name === 'water',
+							// isWater: false,
+						})
+					}
+
+				});
+
+				scene.add(gltf.scene);
+
+
+				// render();
+
+			});
+
+			{//scene2
+				window.scene2 = new THREE.Scene();
+
+				let frustumSize = 2
+				const aspect = window.innerWidth / window.innerHeight;
+				window.camera2 = new THREE.OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, .001, 100);
+				camera2.position.set(0, 0, 1);
+				{
+					let geo = new THREE.PlaneBufferGeometry(1, 1)
+					window.material1 = new THREE.MeshBasicMaterial()
+					let mesh = new THREE.Mesh(geo, material1)
+					// scene2.add(mesh)
+					mesh.position.x = -.5
+					mesh.position.y = .5
+				}
+				{
+					let geo = new THREE.PlaneBufferGeometry(1, 1)
+					window.material2 = new THREE.MeshBasicMaterial()
+					let mesh = new THREE.Mesh(geo, material2)
+					// scene2.add(mesh)
+					mesh.position.x = .5
+					mesh.position.y = .5
+				}
+				{
+					let geo = new THREE.PlaneBufferGeometry(1, 1)
+					window.materialNormal = new THREE.MeshBasicMaterial()
+					let mesh = new THREE.Mesh(geo, materialNormal)
+					// scene2.add(mesh)
+					mesh.position.x = .5
+					mesh.position.y = .5
+				}
+				{
+					let geo = new THREE.PlaneBufferGeometry(1, 1)
+					window.materialPosition = new THREE.MeshBasicMaterial()
+					let mesh = new THREE.Mesh(geo, materialPosition)
+					// scene2.add(mesh)
+					mesh.position.x = -.5
+					mesh.position.y = -.5
+				}
+				{
+					// let geo = new THREE.PlaneBufferGeometry(1, 1)
+					let geo = new THREE.PlaneBufferGeometry(2, 2)
+					window.uniformsSSR = {
+						projectionMatrix: { value: new THREE.Matrix4() },
+						modelViewMatrix: { value: new THREE.Matrix4() },
+						lensProjection: { value: new THREE.Matrix4() },
+						beautyTexture: { value: renderTarget.textures[0] },
+						normalTexture: { value: renderTarget.textures[2] },
+						positionTexture: { value: renderTarget.textures[3] },
+					}
+					window.materialSSR = new THREE.RawShaderMaterial({
+						uniforms: uniformsSSR,
+						vertexShader: `#version 300 es
+							precision lowp sampler2DShadow;
+							uniform mat4 projectionMatrix;
+							uniform mat4 modelViewMatrix;
+							in vec3 position;
+							in vec2 uv;
+							out vec2 texCoord;
+							void main(){
+								texCoord=uv;
+								gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1);
+							}
+						`,
+						fragmentShader: fragmentShaderSSR,
+					})
+					// let materialSSR=new THREE.MeshBasicMaterial({
+					// 	color:'cyan',
+					// })
+					let mesh = new THREE.Mesh(geo, materialSSR)
+					window.meshSSR = mesh
+					scene2.add(mesh)
+					// mesh.position.x = .5
+					// mesh.position.y = -.5
+					// mesh.position.z = .1
+				}
+			}
+
+
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
+
+			controls = new OrbitControls(camera, renderer.domElement);
+			controls.addEventListener('change', () => {
+				dom_tip.style.display = 'none'
+				render()
+			}); // use if there is no animation loop
+			// controls.minDistance = 2;
+			// controls.maxDistance = 10;
+			// controls.target.set( 0, 0, - 0.2 );
+			controls.update();
+
+			window.addEventListener('resize', onWindowResize, false);
+
+		}
+
+		function onWindowResize() {
+
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize(window.innerWidth, window.innerHeight);
+
+			render();
+
+		}
+
+		function addGeoAttributes(geo) {
+			let itemSize
+
+			itemSize = 4
+			let p3d_Vertexs = []
+			geo.attributes.position.array.forEach((n, i) => {
+				p3d_Vertexs.push(n)
+				if (i % 3 === 2) {
+					p3d_Vertexs.push(1)
+				}
+			})
+			geo.setAttribute('p3d_Vertex', new THREE.BufferAttribute(new Float32Array(p3d_Vertexs), itemSize));
+
+			itemSize = 3
+			let p3d_Normals = []
+			geo.attributes.normal.array.forEach((n, i) => {
+				p3d_Normals.push(n)
+			})
+			geo.setAttribute('p3d_Normal', new THREE.BufferAttribute(new Float32Array(p3d_Normals), itemSize));
+
+			itemSize = 2
+			let p3d_MultiTexCoord1s = []
+			geo.attributes.uv.array.forEach((n, i) => {
+				p3d_MultiTexCoord1s.push(n)
+			})
+			geo.setAttribute('p3d_MultiTexCoord1', new THREE.BufferAttribute(new Float32Array(p3d_MultiTexCoord1s), itemSize));
+
+			itemSize = 4
+			let p3d_Colors = []
+			for (let i = 0, ii = 0; i < geo.attributes.position.count; i++, ii += itemSize) {
+				p3d_Colors.push(1, 1, 1, 1)
+			}
+			geo.setAttribute('p3d_Color', new THREE.BufferAttribute(new Float32Array(p3d_Colors), itemSize));
+		}
+
+		function createMtl({ map, isWater }) {//mtl
+
+			let p3d_Texture0 = map
+			// let p3d_Texture0 = new THREE.TextureLoader().load("/lib/3d-game-shaders-for-beginners_github/demonstration/eggs/mill-scene/tex/earth-diffuse.png", render);
+			p3d_Texture0.flipY = false
+			let p3d_Texture1 = map
+			// let p3d_Texture1 = new THREE.TextureLoader().load("/lib/3d-game-shaders-for-beginners_github/demonstration/eggs/mill-scene/tex/normal.png", render);
+			p3d_Texture1.flipY = false
+			let p3d_Texture2 = map
+			// let p3d_Texture2 = new THREE.TextureLoader().load("/lib/3d-game-shaders-for-beginners_github/demonstration/eggs/mill-scene/tex/no-specular.png", render);
+			p3d_Texture2.flipY = false
+
+			let o_p3d_LightSource = {
+				color: new THREE.Vector4(1, 1, 1, 1),
+				ambient: new THREE.Vector4(1, 1, 1, 1),
+				diffuse: new THREE.Vector4(1, 1, 1, 1),
+				specular: new THREE.Vector4(1, 1, 1, 1),
+				position: new THREE.Vector4(),//Panda3D sets p3d_LightSource[i].position.w to zero if this is a directional light.
+				spotDirection: new THREE.Vector3(-1, -1, -1),
+				spotExponent: 0,
+				spotCutoff: 10,
+				spotCosCutoff: -1,
+				constantAttenuation: 1,
+				linearAttenuation: 0,
+				quadraticAttenuation: 1,
+				attenuation: new THREE.Vector3(1, 1, 1, 1),///todo not need
+				shadowMap: p3d_Texture0,
+				shadowViewMatrix: new THREE.Matrix4(),
+			}
+
+			let uniforms = {
+				trans_world_to_view: { value: null },
+				trans_view_to_world: { value: null },
+				p3d_Texture0: { value: p3d_Texture0 },
+				p3d_Texture1: { value: p3d_Texture1 },
+				p3d_Texture2: { value: p3d_Texture2 },
+				pi: { value: new THREE.Vector2(0, Math.PI) },
+				gamma: { value: new THREE.Vector2(1, 0) },
+				p3d_Material: {
+					value: {
+						ambient: new THREE.Vector4(1, 1, 1, 1),
+						diffuse: new THREE.Vector4(1, 1, 1, 1),
+						emission: new THREE.Vector4(1, 1, 1, 1),
+						specular: new THREE.Vector3(1, 1, 1),
+						shininess: 1,
+					}
+				},
+				p3d_ModelViewMatrix,
+				p3d_ProjectionMatrix,
+				p3d_NormalMatrix,
+				isParticle: { value: new THREE.Vector2() },
+				p3d_LightSource: {
+					value: [o_p3d_LightSource],
+					// value: [o_p3d_LightSource, o_p3d_LightSource, o_p3d_LightSource, o_p3d_LightSource],
+				},
+			}
+			if (isWater) {
+				uniforms.isWater = { value: new THREE.Vector2(1, 1) }
+			} else {
+				uniforms.isWater = { value: new THREE.Vector2(0, 0) }
+			}
+			let mtl = new THREE.RawShaderMaterial({
+				uniforms,
+				vertexShader,
+				fragmentShader,
+				transparent: isWater,
+			})
+
+			return mtl
+		}
+
+		//
+
+		window.render = render
+		function render() {
+			// console.log('render')
+			// if (!window.mesh) return;
+			// camera.updateMatrix()
+			// camera.updateMatrixWorld()
+			// camera.updateWorldMatrix()
+			// camera.updateProjectionMatrix()
+
+			uniformsSSR.projectionMatrix.value = camera2.projectionMatrix
+			uniformsSSR.modelViewMatrix.value = meshSSR.modelViewMatrix
+			uniformsSSR.lensProjection.value = camera.projectionMatrix
+
+			meshs.forEach(child => {
+				let uniforms = child.material.uniforms
+
+				p3d_ModelViewMatrix.value = child.modelViewMatrix
+				// uniforms.p3d_ModelViewMatrix.value.getInverse(camera.modelViewMatrix)
+				p3d_ProjectionMatrix.value = camera.projectionMatrix
+				p3d_NormalMatrix.value = new THREE.Matrix3().setFromMatrix4(new THREE.Matrix4().extractRotation(camera.matrixWorldInverse))
+
+				uniforms.trans_world_to_view.value = camera.matrixWorldInverse
+				uniforms.trans_view_to_world.value = camera.matrixWorld
+
+				uniforms.p3d_LightSource.value[0].position.copy(new THREE.Vector4(.2, .4, .6, 0).applyMatrix4(child.modelViewMatrix))
+				// uniforms.p3d_LightSource.value[0].position.copy(new THREE.Vector4(0,0,1,0).applyMatrix4(child.modelViewMatrix))
+
+				// uniforms.p3d_Material.value.ambient = new THREE.Vector4(0, 0, .5, 1)
+				// uniforms.p3d_Material.value.diffuse = new THREE.Vector4(1, 0, 0, 1)
+				// uniforms.p3d_Material.value.emission = new THREE.Vector4(.5, .5, .5, 1)
+				// uniforms.p3d_Material.value.specular = new THREE.Vector3(0, 0, 0)
+				// uniforms.p3d_Material.value.shininess = 1
+
+			})
+
+
+
+			// rendering to MultiRenderTarget
+			renderer.setRenderTarget(renderTarget);
+			renderer.render(scene, camera);
+
+			// rendering to screen with MultiRenderTarget as input
+			material1.map = renderTarget.textures[0];
+			material2.map = renderTarget.textures[1];
+			materialNormal.map = renderTarget.textures[2];
+			materialPosition.map = renderTarget.textures[3];
+			renderer.setRenderTarget(null);
+			renderer.render(scene2, camera2);
+
+		}
+
+	</script>
+
+</body>
+
+</html>
