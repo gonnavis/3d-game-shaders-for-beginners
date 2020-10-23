@@ -1,11 +1,9 @@
 <h1>
   <b>
     This fork is a migrating version of <a href="https://github.com/lettier/3d-game-shaders-for-beginners">upstream repository</a>.
-    The main goal is keep the change of glsl codes as less as possible.
+    The main goal is keep the changes of glsl codes as less as possible.
   </b>
 </h1>
-
---------------------------------------------------------
 
 <p align="center">
 <img src="https://i.imgur.com/x8rtGr4.gif" alt="3D Game Shaders For Beginners" title="3D Game Shaders For Beginners">
