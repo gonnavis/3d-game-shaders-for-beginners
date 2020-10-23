@@ -11,7 +11,10 @@
 <body>
 	<div id="dom_tip"
 		style="width:100%;height:100%;position:fixed;left:0;top:0;pointer-events: none;display:flex;align-items: center;justify-content: center;color:white;user-select: none;text-align: center;">
-		drag to start
+		<div>
+			<span id="dom_tip_text">loading...</span><br>
+			<span>(only support modern pc browser now)</span>
+		</div>
 	</div>
 
 	<script type="module">
@@ -30,6 +33,7 @@
 		var p3d_ProjectionMatrix = { value: new THREE.Matrix4() }
 		var p3d_ModelViewMatrix = { value: new THREE.Matrix4() }
 		var p3d_NormalMatrix = { value: new THREE.Matrix3() }
+		var is_gltf_loaded = false
 
 		main()
 		async function main() {
@@ -60,7 +64,7 @@
 
 			scene = new THREE.Scene();
 
-			var loader = new GLTFLoader().setPath('/lib/3d-game-shaders-for-beginners_github_gonnavis/demonstration/eggs/mill-scene/');
+			var loader = new GLTFLoader().setPath('../eggs/mill-scene/');
 			loader.load('all.glb', function (gltf) {
 				window.gltf = gltf
 
@@ -85,6 +89,12 @@
 
 				// render();
 
+			}, (xhr) => {
+				let ratio = xhr.loaded / xhr.total
+				if (ratio >= 1) {
+					dom_tip_text.innerText = 'drag to start'
+					is_gltf_loaded = true
+				}
 			});
 
 			{//scene2
@@ -173,6 +183,7 @@
 
 			controls = new OrbitControls(camera, renderer.domElement);
 			controls.addEventListener('change', () => {
+				if (!is_gltf_loaded) return
 				dom_tip.style.display = 'none'
 				render()
 			}); // use if there is no animation loop
