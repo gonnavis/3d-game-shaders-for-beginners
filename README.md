@@ -1,5 +1,6 @@
 <h1>
   <b>
+    <a href="http://gonnavis.com/lib/3d-game-shaders-for-beginners_github_gonnavis/demonstration/three.js/index.html">three.js demo</a><br>
     This fork is a migrating version of <a href="https://github.com/lettier/3d-game-shaders-for-beginners">upstream repository</a>.
     The main goal is keep the changes of glsl codes as less as possible.
   </b>
