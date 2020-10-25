@@ -48,6 +48,7 @@
 			window.fragmentShaderSSR = await (await fetch('./shaders/fragment/screen-space-reflection.frag')).text()
 
 			const attachmentNums = 4;
+			// https://github.com/mrdoob/three.js/pull/16390
 			window.renderTarget = new THREE.WebGLMultiRenderTarget(innerWidth, innerHeight, attachmentNums, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType });
 
 			container = document.createElement('div');
