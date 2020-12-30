@@ -3,12 +3,14 @@
     <a href="http://gonnavis.com/lib/3d-game-shaders-for-beginners_github_gonnavis/demonstration/three.js/index.html">three.js demo</a><br>
     This fork is a three.js migrating version of <a href="https://github.com/lettier/3d-game-shaders-for-beginners">upstream repository</a>.
     The main goal is keep the changes of glsl codes as less as possible.
-  </b>
+  </b>  
 </h1>
+<h3>How to extract Panda3D model: https://github.com/lettier/3d-game-shaders-for-beginners/issues/15#issuecomment-715257136</h3>
 
 <p align="center">
 <img src="https://i.imgur.com/x8rtGr4.gif" alt="3D Game Shaders For Beginners" title="3D Game Shaders For Beginners">
 </p>
+<hr/>
 
 # 3D Game Shaders For Beginners
 
