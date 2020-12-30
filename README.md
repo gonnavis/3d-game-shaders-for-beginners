@@ -6,6 +6,7 @@
   </b>  
 </h1>
 <h3>How to extract Panda3D model: https://github.com/lettier/3d-game-shaders-for-beginners/issues/15#issuecomment-715257136</h3>
+<hr/>
 
 <p align="center">
 <img src="https://i.imgur.com/x8rtGr4.gif" alt="3D Game Shaders For Beginners" title="3D Game Shaders For Beginners">
