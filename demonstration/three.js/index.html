@@ -87,6 +87,8 @@
 
 				scene.add(gltf.scene);
 
+				window.is_mounted=true
+
 
 				// render();
 
@@ -183,10 +185,11 @@
 			container.appendChild(renderer.domElement);
 
 			controls = new OrbitControls(camera, renderer.domElement);
+			controls.enableDamping=true
 			controls.addEventListener('change', () => {
 				if (!is_gltf_loaded) return
 				dom_tip.style.display = 'none'
-				render()
+				// render()
 			}); // use if there is no animation loop
 			// controls.minDistance = 2;
 			// controls.maxDistance = 10;
@@ -204,7 +207,7 @@
 
 			renderer.setSize(window.innerWidth, window.innerHeight);
 
-			render();
+			// render();
 
 		}
 
@@ -365,6 +368,14 @@
 			renderer.setRenderTarget(null);
 			renderer.render(scene2, camera2);
 
+		}
+
+		animate()
+		function animate(){
+			requestAnimationFrame(animate)
+			if(!window.is_mounted)return
+			controls.update()
+			render()
 		}
 
 	</script>
