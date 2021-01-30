@@ -5,7 +5,6 @@
     The main goal is keep the changes of glsl codes as less as possible.
   </b>  
 </h1>
-<h3>How to extract Panda3D model: https://github.com/lettier/3d-game-shaders-for-beginners/issues/15#issuecomment-715257136</h3>
 <hr/>
 
 <p align="center">
