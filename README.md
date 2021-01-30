@@ -5,7 +5,6 @@
     The main goal is keep the changes of glsl codes as less as possible.
   </b>  
 </h1>
-<hr/>
 
 <p align="center">
 <img src="https://i.imgur.com/x8rtGr4.gif" alt="3D Game Shaders For Beginners" title="3D Game Shaders For Beginners">
